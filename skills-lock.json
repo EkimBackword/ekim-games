@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "angular-developer": {
+      "source": "angular/skills",
+      "sourceType": "github",
+      "skillPath": "angular-developer/SKILL.md",
+      "computedHash": "4f5c15393807fbdfa0c5bed201732b94d903fe010ca1de99ea1b11eadc95f481"
+    },
+    "angular-new-app": {
+      "source": "angular/skills",
+      "sourceType": "github",
+      "skillPath": "angular-new-app/SKILL.md",
+      "computedHash": "d9f712544847ab80ef7ed20043820afd275c394ca05340c2f20a0f051e35d945"
+    },
+    "link-workspace-packages": {
+      "source": "nrwl/nx-ai-agents-config",
+      "sourceType": "github",
+      "skillPath": "skills/link-workspace-packages/SKILL.md",
+      "computedHash": "7037799a47b8599f38ce66a0b9dfa53e810bb9003bcd8d90eba99b8c4fd3387b"
+    },
+    "nx-generate": {
+      "source": "nrwl/nx-ai-agents-config",
+      "sourceType": "github",
+      "skillPath": "skills/nx-generate/SKILL.md",
+      "computedHash": "7f1e51200e4fb522ffe38e94a20c244b81baf972cb97768f73a4ef4982aa2eb4"
+    },
+    "nx-import": {
+      "source": "nrwl/nx-ai-agents-config",
+      "sourceType": "github",
+      "skillPath": "skills/nx-import/SKILL.md",
+      "computedHash": "b4736ba9a4d9555fff65fe212b6f0ee6eeca76d53fdb1e80962930743c30633e"
+    },
+    "nx-plugins": {
+      "source": "nrwl/nx-ai-agents-config",
+      "sourceType": "github",
+      "skillPath": "skills/nx-plugins/SKILL.md",
+      "computedHash": "6990027490ddbd0b578c946b4055aae84f5645f93f1570c967122e0e21161f78"
+    },
+    "nx-run-tasks": {
+      "source": "nrwl/nx-ai-agents-config",
+      "sourceType": "github",
+      "skillPath": "skills/nx-run-tasks/SKILL.md",
+      "computedHash": "1e763083c059c28cdffbfcbda39e7a9549dcb60e46d68588018805427f3b28b6"
+    },
+    "nx-workspace": {
+      "source": "nrwl/nx-ai-agents-config",
+      "sourceType": "github",
+      "skillPath": "skills/nx-workspace/SKILL.md",
+      "computedHash": "fce31cbb67a02d404ff9a416aa331ee71a6c9d5a011d55779e65cc7b7b9b25f9"
+    },
+    "taiga-ui": {
+      "source": "taiga-family/skills",
+      "sourceType": "github",
+      "skillPath": "taiga-ui/SKILL.md",
+      "computedHash": "5df5cb34de440f32bdbe6daf3e3b7e318836632f2666c956a02df3833152b90f"
+    },
+    "taiga-ui-setup": {
+      "source": "taiga-family/skills",
+      "sourceType": "github",
+      "skillPath": "taiga-ui-setup/SKILL.md",
+      "computedHash": "dce62f7239e12a5f74d52244c5bc375d61521aedbb919569badc849012b21a40"
+    }
+  }
+}
