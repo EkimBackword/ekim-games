@@ -12,3 +12,8 @@ allowBuilds:
   '@prisma/engines': true
   prisma: true
   argon2: true
+overrides:
+  '@vitest/mocker': ^4.1.12
+  'nx>undici': ^7.29.1
+  vite: ^8.3.3
+  'uuid@^8.3.2': ^11.1.1

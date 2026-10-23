@@ -42,6 +42,13 @@
       "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
       "executor": "nx:noop"
     },
+    "integration-test": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "node tools/test/run-api-integration.mjs"
+      }
+    },
     "serve": {
       "continuous": true,
       "executor": "@nx/js:node",

@@ -20,7 +20,6 @@ export class HomePage {
   constructor() {
     effect((onCleanup) => {
       const token = this.auth.accessToken();
-      let active = true;
 
       if (token) {
         void this.chat.connect(token);
@@ -29,7 +28,6 @@ export class HomePage {
       }
 
       onCleanup(() => {
-        active = false;
         this.chat.disconnect();
       });
     });
@@ -37,7 +35,6 @@ export class HomePage {
 
   sendMessage(): void {
     if (!this.draft.trim()) return;
-    this.chat.send(this.draft);
-    this.draft = '';
+    if (this.chat.send(this.draft)) this.draft = '';
   }
 }

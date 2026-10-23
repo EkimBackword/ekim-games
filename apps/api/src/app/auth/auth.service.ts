@@ -27,6 +27,7 @@ interface TokenClaims {
   sub: string;
   sid: string;
   typ: 'access' | 'refresh';
+  jti?: string;
   nickname?: string;
 }
 
@@ -130,6 +131,7 @@ export class AuthService implements OnModuleInit {
         sub: session.userId,
         sid: session.id,
         typ: 'refresh',
+        jti: randomUUID(),
       } satisfies TokenClaims,
       { secret: this.refreshSecret(), expiresIn: REFRESH_SECONDS },
     );
@@ -205,7 +207,12 @@ export class AuthService implements OnModuleInit {
     const refreshSecret = this.refreshSecret();
     const sessionId = randomUUID();
     const refreshToken = await this.jwt.signAsync(
-      { sub: userId, sid: sessionId, typ: 'refresh' } satisfies TokenClaims,
+      {
+        sub: userId,
+        sid: sessionId,
+        typ: 'refresh',
+        jti: randomUUID(),
+      } satisfies TokenClaims,
       { secret: refreshSecret, expiresIn: REFRESH_SECONDS },
     );
     await this.prisma.refreshSession.create({

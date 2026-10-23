@@ -49,17 +49,18 @@ export class ChatStoreService {
     }
   }
 
-  send(text: string): void {
+  send(text: string): boolean {
     const parsed = chatMessageSchema.shape.text.safeParse(text.trim());
     if (!parsed.success) {
       this.error.set('Сообщение должно содержать от 1 до 2000 символов');
-      return;
+      return false;
     }
     if (!this.socket.send(parsed.data)) {
       this.error.set('Нет соединения с чатом');
-      return;
+      return false;
     }
     this.error.set(null);
+    return true;
   }
 
   disconnect(): void {

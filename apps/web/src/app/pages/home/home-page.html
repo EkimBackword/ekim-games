@@ -58,7 +58,7 @@
         appearance="primary"
         tuiButton
         type="submit"
-        [disabled]="!draft.trim()"
+        [disabled]="!draft.trim() || !chat.connected()"
       >
         Отправить
       </button>

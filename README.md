@@ -77,4 +77,14 @@ pnpm nx run web:build
 pnpm nx run-many -t lint -p api web contracts
 ```
 
-Интеграционные и E2E проверки настраиваются отдельным этапом.
+### Проверки API и браузерный сценарий
+
+API integration и Playwright E2E запускаются через Nx. Для них требуется работающий Docker Desktop и установленный браузер Chromium Playwright:
+
+```powershell
+corepack pnpm exec playwright install chromium
+corepack pnpm nx run api:integration-test
+corepack pnpm nx run web:e2e
+```
+
+Каждый запуск поднимает отдельный PostgreSQL Compose-проект со случайным именем и портом, применяет миграции и удаляет только этот тестовый проект вместе с его volume после завершения. Локальная dev-база проекта не используется.
