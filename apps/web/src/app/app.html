@@ -19,6 +19,12 @@
       }
     </header>
 
+    @if (!online()) {
+      <div class="offline-notice" role="status">
+        Вы не в сети. Загруженные страницы доступны, вход и чат требуют подключения.
+      </div>
+    }
+
     @if (httpErrors.message(); as message) {
       <div class="global-error" role="alert">
         <span>{{ message }}</span>

@@ -27,6 +27,11 @@ export const httpErrorInterceptor: HttpInterceptorFn = (request, next) => {
         return throwError(() => error);
       }
 
+      if (error.status === 0) {
+        errors.show('Не удалось связаться с сервером. Проверьте подключение к интернету.');
+        return throwError(() => error);
+      }
+
       switch (error.status) {
         case 401:
           if (!isCredentialSubmission(request.url)) {

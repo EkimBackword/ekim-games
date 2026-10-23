@@ -70,6 +70,22 @@
   font-size: 0.88rem;
 }
 
+.offline-notice {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d5a66f;
+  border-radius: 0.75rem;
+  background: #fff7e8;
+  color: #70451f;
+  font-size: 0.88rem;
+}
+
+:host-context([tuiTheme='dark']) .offline-notice {
+  border-color: #8f653d;
+  background: #3a3024;
+  color: #f0d3ad;
+}
+
 .route-content {
   display: flex;
   flex: 1;
