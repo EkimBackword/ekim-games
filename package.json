@@ -8,6 +8,11 @@
     "dev:api": "nx serve api",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
+    "docker:build": "docker compose --env-file .env.production -f docker-compose.production.yml build",
+    "docker:up": "docker compose --env-file .env.production -f docker-compose.production.yml up --build -d",
+    "docker:down": "docker compose --env-file .env.production -f docker-compose.production.yml down",
+    "docker:logs": "docker compose --env-file .env.production -f docker-compose.production.yml logs -f",
+    "docker:ps": "docker compose --env-file .env.production -f docker-compose.production.yml ps",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy"

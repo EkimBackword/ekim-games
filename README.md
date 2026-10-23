@@ -26,6 +26,29 @@ Nx запускает web вместе с API. Откройте адрес, ко
 
 Для локальной разработки API читает `.env`. Этот файл исключён из Git. Не подставляйте один и тот же секрет для access и refresh JWT. Для production задайте `COOKIE_SECURE=true` и обслуживайте приложение по HTTPS.
 
+## Запуск всего приложения в Docker
+
+Для контейнерного режима подготовьте отдельный файл окружения:
+
+```powershell
+Copy-Item .env.production.example .env.production
+```
+
+Задайте в `.env.production` уникальные секреты PostgreSQL и JWT. Для локального запуска через HTTP установите `WEB_ORIGIN=http://localhost:8080` и `COOKIE_SECURE=false`. Затем соберите образы и запустите стек:
+
+```powershell
+corepack pnpm docker:up
+corepack pnpm docker:ps
+```
+
+Откройте `http://localhost:8080`. Compose дождётся готовности PostgreSQL, применит Prisma migrations, затем запустит API и Nginx. Nginx отдаёт Angular-приложение и проксирует `/api/**` и Socket.IO `/socket.io/**` к API. PostgreSQL не публикует порт в этом режиме. Данные сохраняются в отдельном Docker volume.
+
+Для остановки используйте `corepack pnpm docker:down`; команда сохраняет volume с базой. `corepack pnpm docker:logs` показывает логи сервисов. Файл `.env.production` не включается в Git и исключён из Docker build context; секреты передаются контейнерам во время запуска и не записываются в Docker images.
+
+На VPS оставьте `APP_BIND_ADDRESS=127.0.0.1`, задайте HTTPS origin сайта и `COOKIE_SECURE=true`. Настройте host Nginx как TLS reverse proxy на `127.0.0.1:8080`; передавайте `X-Forwarded-Proto` и WebSocket upgrade headers для Socket.IO. PostgreSQL остаётся доступен только во внутренней Docker-сети.
+
+Health checks проверяют PostgreSQL (`pg_isready`), API (`GET /api/health`, включая запрос к базе) и Nginx (`GET /healthz`).
+
 ## Аутентификация и чат
 
 - Никнейм уникален без учёта регистра; перед сравнением сервер нормализует Unicode (NFKC) и приводит строку к нижнему регистру.

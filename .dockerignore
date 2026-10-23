@@ -1,0 +1,15 @@
+.git
+.nx
+.angular
+.codex
+.agents
+node_modules
+dist
+coverage
+out-tsc
+.env
+.env.*
+!.env.example
+!.env.production.example
+*.log
+__screenshots__
