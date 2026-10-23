@@ -9,3 +9,6 @@ allowBuilds:
   lmdb: false
   msgpackr-extract: false
   '@nestjs/core': false
+  '@prisma/engines': true
+  prisma: true
+  argon2: true

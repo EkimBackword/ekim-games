@@ -1,2 +1,46 @@
-<eg-nx-welcome></eg-nx-welcome>
-<router-outlet></router-outlet>
+<tui-root>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" routerLink="/" aria-label="Ekim Games — главная">
+        Ekim Games
+      </a>
+      @if (auth.user(); as user) {
+        <div class="account-bar">
+          <span>Вы вошли как <strong>{{ user.nickname }}</strong></span>
+          <button
+            appearance="secondary"
+            tuiButton
+            type="button"
+            (click)="logout()"
+          >
+            Выйти
+          </button>
+        </div>
+      }
+    </header>
+
+    @if (httpErrors.message(); as message) {
+      <div class="global-error" role="alert">
+        <span>{{ message }}</span>
+        <button
+          appearance="secondary"
+          tuiButton
+          type="button"
+          aria-label="Закрыть сообщение об ошибке"
+          (click)="httpErrors.clear()"
+        >
+          ×
+        </button>
+      </div>
+    }
+
+    <main class="route-content">
+      <router-outlet />
+    </main>
+
+    <footer class="site-footer">
+      <span>© 2026 Ekim Games</span>
+      <span>Создано, чтобы играть вместе</span>
+    </footer>
+  </div>
+</tui-root>

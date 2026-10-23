@@ -1,0 +1,71 @@
+<form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
+  <div class="auth-heading">
+    <span class="auth-mark" aria-hidden="true">✳</span>
+    <div>
+      <p class="eyebrow">Добро пожаловать</p>
+      <h2>С возвращением</h2>
+    </div>
+  </div>
+  <p class="auth-subtitle">Войдите, чтобы продолжить общение.</p>
+
+  <tui-textfield>
+    <label for="nickname" tuiLabel>Никнейм</label>
+    <input
+      id="nickname"
+      tuiInput
+      formControlName="nickname"
+      minlength="3"
+      maxlength="24"
+      autocomplete="username"
+      required
+    />
+  </tui-textfield>
+  @if (form.controls.nickname.touched && form.controls.nickname.hasError('required')) {
+    <p class="field-error" role="alert">Введите никнейм.</p>
+  } @else if (form.controls.nickname.touched && form.controls.nickname.hasError('minlength')) {
+    <p class="field-error" role="alert">Никнейм должен содержать не менее 3 символов.</p>
+  } @else if (form.controls.nickname.touched && form.controls.nickname.hasError('maxlength')) {
+    <p class="field-error" role="alert">Никнейм должен содержать не более 24 символов.</p>
+  }
+
+  <tui-textfield>
+    <label for="password" tuiLabel>Пароль</label>
+    <input
+      id="password"
+      tuiInput
+      formControlName="password"
+      type="password"
+      minlength="12"
+      maxlength="128"
+      autocomplete="current-password"
+      required
+    />
+    <tui-icon tuiPassword />
+  </tui-textfield>
+  @if (form.controls.password.touched && form.controls.password.hasError('required')) {
+    <p class="field-error" role="alert">Введите пароль.</p>
+  } @else if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+    <p class="field-error" role="alert">Пароль должен содержать не менее 12 символов.</p>
+  } @else if (form.controls.password.touched && form.controls.password.hasError('maxlength')) {
+    <p class="field-error" role="alert">Пароль должен содержать не более 128 символов.</p>
+  }
+
+  @if (formError(); as error) {
+    <p class="inline-error" role="alert">{{ error }}</p>
+  }
+
+  <button
+    class="auth-submit"
+    appearance="primary"
+    tuiButton
+    type="submit"
+    [loading]="loading()"
+    [disabled]="loading()"
+  >
+    Войти
+  </button>
+  <p class="switch-auth">
+    Впервые здесь?
+    <a class="text-button" routerLink="/register">Создать аккаунт</a>
+  </p>
+</form>

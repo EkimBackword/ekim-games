@@ -1,0 +1,120 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  color: #20352e;
+  background:
+    radial-gradient(
+      ellipse at 78% 10%,
+      rgb(233 241 218 / 72%),
+      transparent 34rem
+    ),
+    #f7f6f0;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.page-shell {
+  display: flex;
+  min-height: 100dvh;
+  max-width: 1240px;
+  flex-direction: column;
+  margin-inline: auto;
+  padding: 0 5.5vw;
+}
+
+.site-header,
+.account-bar,
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-header {
+  min-height: 88px;
+  border-bottom: 1px solid #e9e9df;
+}
+
+.brand {
+  color: #20352e;
+  font-size: 1.28rem;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  text-decoration: none;
+}
+
+:host-context([tuiTheme='dark']) .brand {
+  color: #f0eee6;
+}
+
+.account-bar {
+  gap: 1rem;
+  color: #66736b;
+  font-size: 0.9rem;
+}
+
+.account-bar strong {
+  color: #20352e;
+}
+
+.global-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.65rem 0.9rem 0.65rem 1rem;
+  border: 1px solid #e7c5bd;
+  border-radius: 0.75rem;
+  background: #fff4f0;
+  color: #8f3028;
+  font-size: 0.88rem;
+}
+
+.route-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.site-footer {
+  min-height: 58px;
+  border-top: 1px solid #e9e9df;
+  color: #969b92;
+  font-size: 0.74rem;
+}
+
+:host-context([tuiTheme='dark']) .site-header {
+  border-color: #454545;
+}
+
+:host-context([tuiTheme='dark']) .account-bar {
+  color: #b7b7b0;
+}
+
+:host-context([tuiTheme='dark']) .account-bar strong {
+  color: #f0eee6;
+}
+
+:host-context([tuiTheme='dark']) .site-footer {
+  border-color: #454545;
+  color: #aaa9a1;
+}
+
+@media (max-width: 720px) {
+  .page-shell {
+    padding-inline: 1.15rem;
+  }
+
+  .site-header {
+    min-height: 72px;
+  }
+
+  .account-bar {
+    gap: 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .site-footer {
+    font-size: 0.66rem;
+  }
+}

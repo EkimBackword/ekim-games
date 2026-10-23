@@ -1,0 +1,130 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: #a16c3e;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.7rem, 4vw, 2.5rem);
+  border: 1px solid #e8e7dc;
+  border-radius: 1.25rem;
+  background: #fffefa;
+  box-shadow: 0 22px 60px rgb(51 65 49 / 8%);
+}
+
+:host-context([tuiTheme='dark']) .auth-card {
+  border-color: #494943;
+  background: #292a28;
+  box-shadow: 0 22px 60px rgb(0 0 0 / 24%);
+  color: #f0eee6;
+}
+
+.auth-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.auth-heading .eyebrow {
+  margin-bottom: 0.28rem;
+}
+
+.auth-heading h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: -0.045em;
+}
+
+:host-context([tuiTheme='dark']) .auth-heading h2 {
+  color: #f0eee6;
+}
+
+.auth-mark {
+  display: grid;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: #edf1e6;
+  color: #648456;
+  font-size: 1.4rem;
+}
+
+.auth-subtitle {
+  margin: -0.3rem 0 0.25rem;
+  color: #788078;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+:host-context([tuiTheme='dark']) .auth-subtitle {
+  color: #c2c3bb;
+}
+
+.auth-card tui-textfield {
+  width: 100%;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.switch-auth,
+.password-note {
+  margin: 0;
+  color: #788078;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+:host-context([tuiTheme='dark']) .switch-auth,
+:host-context([tuiTheme='dark']) .password-note {
+  color: #c2c3bb;
+}
+
+.text-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #557348;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+:host-context([tuiTheme='dark']) .text-button {
+  color: #a9cb96;
+}
+
+.text-button:hover {
+  text-decoration: underline;
+}
+
+.password-note {
+  font-size: 0.75rem;
+}
+
+.inline-error {
+  margin: 0;
+  color: #ad3f39;
+  font-size: 0.83rem;
+}
+
+.field-error {
+  margin: -0.65rem 0 0;
+  color: #ad3f39;
+  font-size: 0.78rem;
+}

@@ -1,0 +1,68 @@
+@if (auth.user(); as user) {
+  <section class="chat-panel" aria-labelledby="chat-title">
+    <div class="panel-heading">
+      <div>
+        <p class="eyebrow">Общайтесь и знакомьтесь</p>
+        <h1 id="chat-title">Общий чат</h1>
+      </div>
+      <span class="online-badge" [class.is-offline]="!chat.connected()">
+        <span></span>{{ chat.connected() ? 'Онлайн' : 'Подключение…' }}
+      </span>
+    </div>
+
+    <div class="messages" aria-live="polite" aria-label="Сообщения чата">
+      @if (chat.loading()) {
+        <p role="status">Загружаем историю чата…</p>
+      } @else {
+        @for (message of chat.messages(); track message.id) {
+          <article
+            class="message"
+            [class.own-message]="message.authorNickname === user.nickname"
+          >
+            <div class="message-meta">
+              <strong>{{ message.authorNickname }}</strong>
+              <time [attr.datetime]="message.createdAt">
+                {{ message.createdAt | date: 'HH:mm' }}
+              </time>
+            </div>
+            <p>{{ message.text }}</p>
+          </article>
+        } @empty {
+        <div class="empty-state">
+          <span class="empty-icon" aria-hidden="true">✳</span>
+          <p>Здесь пока тихо. Начните разговор.</p>
+        </div>
+        }
+      }
+    </div>
+
+    @if (chat.error(); as error) {
+      <p class="inline-error" role="status">{{ error }}</p>
+    }
+
+    <form class="message-form" (ngSubmit)="sendMessage()">
+      <tui-textfield class="message-input">
+        <label for="message" tuiLabel>Ваше сообщение</label>
+        <input
+          id="message"
+          tuiInput
+          name="message"
+          [(ngModel)]="draft"
+          maxlength="2000"
+          autocomplete="off"
+          placeholder="Напишите что-нибудь…"
+          aria-label="Текст сообщения"
+        />
+      </tui-textfield>
+      <button
+        appearance="primary"
+        tuiButton
+        type="submit"
+        [disabled]="!draft.trim()"
+      >
+        Отправить
+      </button>
+    </form>
+    <p class="message-hint">Сообщения видны всем участникам общего чата.</p>
+  </section>
+}

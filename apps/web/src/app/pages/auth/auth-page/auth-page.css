@@ -1,0 +1,77 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+.welcome-layout {
+  display: grid;
+  flex: 1;
+  align-items: center;
+  grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.72fr);
+  gap: clamp(3rem, 8vw, 8rem);
+  padding-block: 4.5rem;
+}
+
+.auth-form-slot {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.auth-form-slot > router-outlet {
+  display: none;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: #a16c3e;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.welcome-copy h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(3.4rem, 6vw, 5.6rem);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  line-height: 0.99;
+}
+
+.welcome-copy h1 span {
+  color: #648456;
+  font-style: italic;
+}
+
+.welcome-description {
+  max-width: 26rem;
+  margin: 1.7rem 0 2rem;
+  color: #68746c;
+  font-size: 1.04rem;
+  line-height: 1.7;
+}
+
+:host-context([tuiTheme='dark']) .welcome-copy h1 {
+  color: #f0eee6;
+}
+
+:host-context([tuiTheme='dark']) .welcome-description {
+  color: #c2c3bb;
+}
+
+@media (max-width: 720px) {
+  .welcome-layout {
+    grid-template-columns: 1fr;
+    gap: 2.2rem;
+    padding-block: 2.5rem;
+  }
+
+  .auth-form-slot {
+    grid-column: 1;
+  }
+
+  .welcome-copy h1 {
+    font-size: clamp(3.25rem, 15vw, 4.5rem);
+  }
+}

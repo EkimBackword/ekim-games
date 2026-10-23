@@ -18,21 +18,30 @@
           {
             "glob": "**/*",
             "input": "apps/web/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/@taiga-ui/icons/src",
+            "output": "assets/taiga-ui/icons"
           }
         ],
-        "styles": ["apps/web/src/styles.css"]
+        "styles": [
+          "apps/web/src/styles.css",
+          "@taiga-ui/styles/taiga-ui-theme.less",
+          "@taiga-ui/styles/taiga-ui-fonts.less"
+        ]
       },
       "configurations": {
         "production": {
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "1mb",
+              "maximumError": "1.25mb"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
+              "maximumWarning": "5kb",
               "maximumError": "8kb"
             }
           ],
