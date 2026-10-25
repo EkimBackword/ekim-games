@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "nx serve web",
     "dev:api": "nx serve api",
+    "env:generate": "node tools/env/generate-env.mjs",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
+    "db:roles": "docker compose run --rm db-roles",
     "docker:build": "docker compose --env-file .env.production -f docker-compose.production.yml build",
     "docker:up": "docker compose --env-file .env.production -f docker-compose.production.yml up --build -d",
     "docker:down": "docker compose --env-file .env.production -f docker-compose.production.yml down",

@@ -4,7 +4,13 @@ Starter kit мультиплеерного веб-приложения на Nx: 
 
 ## Локальный запуск
 
-Требуются Node.js 24, Corepack и Docker Desktop. PostgreSQL 18 запускается через Compose. Сначала создайте `.env` из `.env.example`. Замените оба JWT placeholder разными случайными значениями минимум по 32 символа. Задайте случайный hex-пароль PostgreSQL и укажите его одинаково в `POSTGRES_PASSWORD` и в пароле `DATABASE_URL`.
+Требуются Node.js 24, Corepack и Docker Desktop. PostgreSQL 18 запускается через Compose. Для автоматического создания `.env` с разными случайными секретами выполните:
+
+```powershell
+corepack pnpm env:generate
+```
+
+Скрипт не перезаписывает существующий `.env`. Если создаёте его вручную из `.env.example`, задайте разные случайные hex-пароли для администратора PostgreSQL (`POSTGRES_PASSWORD`), роли миграций (`MIGRATION_DB_PASSWORD`) и роли приложения (`APP_DB_PASSWORD`), а также разные секреты JWT. Укажите пароль миграций в `MIGRATION_DATABASE_URL`, пароль приложения в `DATABASE_URL`.
 
 Случайную hex-строку можно получить командой PowerShell:
 
@@ -17,14 +23,23 @@ node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
 ```powershell
 corepack pnpm db:up
 # дождитесь статуса healthy у контейнера postgres в Docker Desktop
+corepack pnpm db:roles
 corepack pnpm db:migrate
 corepack pnpm db:generate
 corepack pnpm dev
 ```
 
+Если volume PostgreSQL уже содержит базу, `POSTGRES_PASSWORD` применяется не повторно: значение в `.env` само по себе не меняет пароль существующей роли `ekim_games`. Если пароль в `.env` отличается от установленного в базе, смените пароль роли через локальное подключение к контейнеру:
+
+```powershell
+docker compose exec postgres psql -U ekim_games -d ekim_games
+```
+
+В приглашении `psql` выполните `\password ekim_games`, введите новый пароль, совпадающий с `POSTGRES_PASSWORD` в `.env`, затем выйдите командой `\q`. После этого повторите `corepack pnpm db:roles`. Не удаляйте volume (`docker compose down -v`) ради смены пароля — это удалит данные базы.
+
 Nx запускает web вместе с API. Откройте адрес, который выведет Angular dev server (обычно `http://localhost:4200`). Команда `corepack pnpm db:down` останавливает контейнер PostgreSQL; volume с данными сохраняется.
 
-Для локальной разработки API читает `.env`. Этот файл исключён из Git. Не подставляйте один и тот же секрет для access и refresh JWT. Для production задайте `COOKIE_SECURE=true` и обслуживайте приложение по HTTPS.
+Команда `db:roles` создаёт или обновляет отдельные роли: `ekim_games_migrate` становится владельцем базы и схемы и используется только Prisma migrations; `ekim_games_app` получает права только на чтение и изменение данных в `public`. В локальном Compose она также создаёт `ekim_games_shadow` для `prisma migrate dev`. Prisma берёт адрес этой базы из `SHADOW_DATABASE_URL`; если переменная отсутствует, он формирует адрес, заменяя имя базы в `MIGRATION_DATABASE_URL` на `ekim_games_shadow`. Shadow database нужна только для разработки миграций и очищается Prisma при запуске `migrate dev`; `migrate deploy` в production её не использует. `ekim_games` из `POSTGRES_USER` — административная роль только для настройки пользователей и прав. Для существующей базы настройка переносит владение пользовательскими таблицами, последовательностями и типами в схеме `public` к роли миграций, не затрагивая системные объекты и не удаляя volume. API читает `DATABASE_URL`, Prisma CLI — `MIGRATION_DATABASE_URL`. `.env` исключён из Git. Не подставляйте один и тот же секрет для access и refresh JWT. Для production задайте `COOKIE_SECURE=true` и обслуживайте приложение по HTTPS.
 
 ## Запуск всего приложения в Docker
 
@@ -34,7 +49,7 @@ Nx запускает web вместе с API. Откройте адрес, ко
 Copy-Item .env.production.example .env.production
 ```
 
-Задайте в `.env.production` уникальные секреты PostgreSQL и JWT. Для локального запуска через HTTP установите `WEB_ORIGIN=http://localhost:8080` и `COOKIE_SECURE=false`. Затем соберите образы и запустите стек:
+Задайте в `.env.production` разные случайные hex-пароли `POSTGRES_PASSWORD`, `MIGRATION_DB_PASSWORD` и `APP_DB_PASSWORD`, а также уникальные секреты JWT. Для локального запуска через HTTP установите `WEB_ORIGIN=http://localhost:8080` и `COOKIE_SECURE=false`. Compose настроит роли до миграций; контейнер миграций подключается как владелец базы, а API — как `ekim_games_app`. Затем соберите образы и запустите стек:
 
 ```powershell
 corepack pnpm docker:up

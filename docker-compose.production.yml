@@ -17,6 +17,25 @@ services:
       retries: 10
       start_period: 10s
 
+  db-roles:
+    image: postgres:18-alpine
+    restart: 'no'
+    environment:
+      PGHOST: postgres
+      PGUSER: ekim_games
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}
+      PGDATABASE: ekim_games
+      CREATE_SHADOW_DATABASE: 'false'
+      MIGRATION_DB_PASSWORD: ${MIGRATION_DB_PASSWORD:?Set MIGRATION_DB_PASSWORD in .env.production}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Set APP_DB_PASSWORD in .env.production}
+    volumes:
+      - ./tools/db/ensure-db-roles.sql:/ensure-db-roles.sql:ro
+    entrypoint: ['/bin/sh', '-ec']
+    command: ['psql -v ON_ERROR_STOP=1 -f /ensure-db-roles.sql']
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   migrate:
     image: ekim-games-api-migrate:local
     build:
@@ -25,10 +44,11 @@ services:
       target: migrate
     restart: 'no'
     environment:
-      DATABASE_URL: postgresql://ekim_games:${POSTGRES_PASSWORD}@postgres:5432/ekim_games?schema=public
+      DATABASE_URL: postgresql://ekim_games_migrate:${MIGRATION_DB_PASSWORD}@postgres:5432/ekim_games?schema=public
+      MIGRATION_DATABASE_URL: postgresql://ekim_games_migrate:${MIGRATION_DB_PASSWORD}@postgres:5432/ekim_games?schema=public
     depends_on:
-      postgres:
-        condition: service_healthy
+      db-roles:
+        condition: service_completed_successfully
 
   api:
     image: ekim-games-api:local
@@ -40,7 +60,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://ekim_games:${POSTGRES_PASSWORD}@postgres:5432/ekim_games?schema=public
+      DATABASE_URL: postgresql://ekim_games_app:${APP_DB_PASSWORD}@postgres:5432/ekim_games?schema=public
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?Set JWT_ACCESS_SECRET in .env.production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?Set JWT_REFRESH_SECRET in .env.production}
       WEB_ORIGIN: ${WEB_ORIGIN:?Set WEB_ORIGIN in .env.production}
@@ -48,6 +68,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      db-roles:
+        condition: service_completed_successfully
       migrate:
         condition: service_completed_successfully
     healthcheck:

@@ -17,8 +17,8 @@ import type * as Prisma from "./prismaNamespace"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.10.0",
-  "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
+  "clientVersion": "7.10.1",
+  "engineVersion": "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8",
   "activeProvider": "postgresql",
   "inlineSchema": "generator client {\n  provider     = \"prisma-client\"\n  output       = \"../src/generated/prisma\"\n  moduleFormat = \"cjs\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel User {\n  id                 String           @id @default(uuid()) @db.Uuid\n  nickname           String           @db.VarChar(24)\n  normalizedNickname String           @unique @db.VarChar(128)\n  passwordHash       String           @db.VarChar(256)\n  createdAt          DateTime         @default(now()) @db.Timestamptz(3)\n  sessions           RefreshSession[]\n  messages           ChatMessage[]\n}\n\nmodel RefreshSession {\n  id        String    @id @default(uuid()) @db.Uuid\n  userId    String    @db.Uuid\n  tokenHash String    @unique @db.VarChar(64)\n  createdAt DateTime  @default(now()) @db.Timestamptz(3)\n  expiresAt DateTime  @db.Timestamptz(3)\n  revokedAt DateTime? @db.Timestamptz(3)\n  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@index([userId, revokedAt])\n  @@index([expiresAt])\n}\n\nmodel ChatMessage {\n  id        String   @id @default(uuid()) @db.Uuid\n  userId    String   @db.Uuid\n  text      String   @db.VarChar(2000)\n  createdAt DateTime @default(now()) @db.Timestamptz(3)\n  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)\n\n  @@index([createdAt, id])\n}\n",
   "runtimeDataModel": {

@@ -72,6 +72,7 @@ export async function startIsolatedPostgres() {
     TEST_DATABASE_PORT: String(port),
     TEST_COMPOSE_PROJECT: `eg-test-${randomUUID().replaceAll('-', '').slice(0, 12)}`,
     DATABASE_URL: `postgresql://eg_test:eg_test_only@127.0.0.1:${port}/ekim_games_test?schema=public`,
+    MIGRATION_DATABASE_URL: `postgresql://eg_test:eg_test_only@127.0.0.1:${port}/ekim_games_test?schema=public`,
     JWT_ACCESS_SECRET: randomUUID() + randomUUID(),
     JWT_REFRESH_SECRET: randomUUID() + randomUUID(),
     NODE_ENV: 'test',

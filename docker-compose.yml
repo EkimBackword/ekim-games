@@ -16,5 +16,24 @@ services:
       timeout: 3s
       retries: 10
 
+  db-roles:
+    image: postgres:18-alpine
+    restart: 'no'
+    environment:
+      PGHOST: postgres
+      PGUSER: ekim_games
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      PGDATABASE: ekim_games
+      CREATE_SHADOW_DATABASE: 'true'
+      MIGRATION_DB_PASSWORD: ${MIGRATION_DB_PASSWORD:?Set MIGRATION_DB_PASSWORD in .env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Set APP_DB_PASSWORD in .env}
+    volumes:
+      - ./tools/db/ensure-db-roles.sql:/ensure-db-roles.sql:ro
+    entrypoint: ['/bin/sh', '-ec']
+    command: ['psql -v ON_ERROR_STOP=1 -f /ensure-db-roles.sql']
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres-data:
