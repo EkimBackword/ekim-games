@@ -24,22 +24,56 @@ export async function allocatePort() {
 }
 
 export function run(command, args, env = process.env) {
-  const executable =
-    command === 'pnpm'
-      ? process.platform === 'win32'
-        ? 'pnpm.cmd'
-        : 'pnpm'
-      : command;
-  const result = spawnSync(executable, args, {
+  const isWindows = process.platform === 'win32';
+  const isPnpm = command === 'pnpm';
+  const isExec = isPnpm && args[0] === 'exec';
+  let executable = command;
+  let commandArgs = args;
+
+  if (isPnpm && isWindows) {
+    if (!isExec) {
+      throw new Error(
+        `Неподдерживаемый вызов pnpm в тестовом runner: ${args[0]}`,
+      );
+    }
+
+    const cliPaths = {
+      prisma: join(
+        workspaceRoot,
+        'node_modules',
+        'prisma',
+        'build',
+        'index.js',
+      ),
+      playwright: join(
+        workspaceRoot,
+        'node_modules',
+        '@playwright',
+        'test',
+        'cli.js',
+      ),
+      vitest: join(workspaceRoot, 'node_modules', 'vitest', 'vitest.mjs'),
+    };
+    const cliPath = cliPaths[args[1]];
+    if (!cliPath) {
+      throw new Error(`Неизвестная CLI-команда pnpm exec: ${args[1]}`);
+    }
+
+    executable = process.execPath;
+    commandArgs = [cliPath, ...args.slice(2)];
+  } else if (isPnpm) {
+    executable = 'pnpm';
+  }
+
+  const result = spawnSync(executable, commandArgs, {
     cwd: workspaceRoot,
     env,
-    shell: process.platform === 'win32' && executable.endsWith('.cmd'),
     stdio: 'inherit',
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(
-      `${command} завершилась с кодом ${result.status ?? 'signal'}`,
+      `${isPnpm ? args.join(' ') : command} завершилась с кодом ${result.status ?? 'signal'}`,
     );
   }
 }

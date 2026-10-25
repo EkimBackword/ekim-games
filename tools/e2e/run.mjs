@@ -65,11 +65,14 @@ try {
     PORT: String(webPort),
     WEB_ORIGIN: `http://127.0.0.1:${webPort}`,
   };
-  const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+  const isWindows = process.platform === 'win32';
+  const command = isWindows ? process.execPath : 'pnpm';
   webServer = spawn(
     command,
     [
-      'nx',
+      ...(isWindows
+        ? [workspacePath('node_modules', 'nx', 'dist', 'bin', 'nx.js')]
+        : ['nx']),
       'serve',
       'web',
       `--port=${webPort}`,
@@ -79,12 +82,12 @@ try {
     {
       cwd: workspacePath(),
       env,
-      shell: process.platform === 'win32',
       detached: process.platform !== 'win32',
       stdio: 'inherit',
     },
   );
   await waitForServer(`http://127.0.0.1:${webPort}`, webServer);
+  await waitForServer(`http://127.0.0.1:${apiPort}/api/health`, webServer);
   run(
     'pnpm',
     [

@@ -2,14 +2,14 @@ FROM node:24-bookworm-slim AS build
 
 WORKDIR /workspace
 
-RUN corepack enable
+RUN npm install --global pnpm@11.25.0
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN corepack pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN corepack pnpm nx build web --configuration=production
+RUN pnpm nx build web --configuration=production
 
 FROM nginxinc/nginx-unprivileged:alpine AS runtime
 

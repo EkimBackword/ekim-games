@@ -55,6 +55,15 @@
 - Поддерживай README и документацию по мере появления подтверждённых решений; ADR фиксируют контекст, альтернативы, решение, причины и последствия.
 - Документация и инструкции проекта должны быть на русском языке.
 
+## Пакетный менеджер и Node.js
+
+- Используй только pnpm, вызывая его напрямую, во всех командах, скриптах, конфигурациях и документации проекта.
+- Устанавливай зависимости командой `pnpm install`; не переходи на npm или Yarn для управления зависимостями.
+- Nx запускай как `pnpm nx <команда>`; не используй глобальный Nx или `npx nx`.
+- Соблюдай версию pnpm `11.25.0`, закреплённую в `packageManager` корневого `package.json`.
+- Используй Node.js `24.22.0` через nvm, если nvm доступен.
+- Не меняй версии зависимостей или lockfile без обоснованной необходимости.
+
 ## Постоянный процесс
 
 - Этап 0: подготовка контекста и инструментов; не создавать Nx workspace, приложения или зависимости до отдельного согласования.
@@ -66,26 +75,26 @@
 
 
 <!-- nx configuration start-->
-<!-- Leave the start & end comments to automatically receive updates. -->
+<!-- Не удаляй начальный и конечный комментарии: они нужны для автоматического обновления блока. -->
 
-## General Guidelines for working with Nx
+## Общие рекомендации по работе с Nx
 
-- For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
-- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
-- Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
-- You have access to the Nx MCP server and its tools, use them to help the user
-- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
-- NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+- Перед изучением структуры workspace, проектов, задач и зависимостей сначала используй навык `nx-workspace`.
+- Запускай задачи (например, сборку, lint, тесты и E2E) через Nx: `nx run`, `nx run-many` или `nx affected`. Не запускай вместо них напрямую инструменты, лежащие в основе задачи.
+- Перед командами Nx указывай пакетный менеджер workspace: `pnpm nx <команда>`. Не используй глобально установленный Nx или `npx nx`.
+- Для помощи пользователю используй доступный MCP-сервер Nx.
+- Рекомендации по плагинам Nx смотри в `node_modules/@nx/<плагин>/PLUGIN.md`. Если такого файла нет, продолжай без него.
+- Не угадывай флаги CLI. Если не уверен, сначала проверь документацию Nx или справку команды через `--help`.
 
-## Scaffolding & Generators
+## Создание структуры и генераторы
 
-- For scaffolding tasks (creating apps, libs, project structure, setup), ALWAYS invoke the `nx-generate` skill FIRST before exploring or calling MCP tools
+- Для создания приложений и библиотек, настройки или формирования структуры сначала обязательно используй навык `nx-generate`, а уже затем изучай workspace или вызывай MCP-инструменты.
 
-## When to use nx_docs
+## Когда использовать nx_docs
 
-- USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
-- DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
-- The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
+- Используй `nx_docs` для изучения расширенных настроек, незнакомых флагов, руководств по миграции, конфигурации плагинов и нестандартных случаев.
+- Не используй `nx_docs` для базового синтаксиса генераторов (`nx g @nx/react:app`), стандартных команд и уже известных возможностей.
+- Навык `nx-generate` сам находит нужную информацию. Не вызывай `nx_docs` только ради поиска синтаксиса генератора.
 
 
 <!-- nx configuration end-->
