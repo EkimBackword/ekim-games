@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import {
   allocatePort,
+  registerShutdownCleanup,
   run,
   startIsolatedPostgres,
   terminateTree,
@@ -18,6 +19,7 @@ while (webPort === apiPort) webPort = await allocatePort();
 const tempDirectory = workspacePath('.nx', 'e2e');
 const proxyPath = join(tempDirectory, `proxy-${randomUUID()}.json`);
 let webServer;
+let webCleanupPromise;
 
 async function waitForServer(url, child) {
   const deadline = Date.now() + 120_000;
@@ -44,6 +46,35 @@ async function stopWebServer(child) {
     delay(10_000),
   ]);
 }
+
+function cleanupWebResources() {
+  if (webCleanupPromise) return webCleanupPromise;
+
+  webCleanupPromise = (async () => {
+    let stopError;
+    let removeError;
+    try {
+      await stopWebServer(webServer);
+    } catch (error) {
+      stopError = error;
+    }
+    try {
+      await rm(proxyPath, { force: true });
+    } catch (error) {
+      removeError = error;
+    }
+    if (stopError || removeError) {
+      throw new AggregateError(
+        [stopError, removeError].filter(Boolean),
+        'Не удалось полностью очистить ресурсы E2E-теста',
+      );
+    }
+  })();
+
+  return webCleanupPromise;
+}
+
+const unregisterShutdownCleanup = registerShutdownCleanup(cleanupWebResources);
 
 try {
   await mkdir(tempDirectory, { recursive: true });
@@ -100,7 +131,10 @@ try {
     { ...env, BASE_URL: `http://127.0.0.1:${webPort}` },
   );
 } finally {
-  await stopWebServer(webServer);
-  await rm(proxyPath, { force: true });
-  await database.dispose();
+  try {
+    await cleanupWebResources();
+  } finally {
+    unregisterShutdownCleanup();
+    await database.dispose();
+  }
 }

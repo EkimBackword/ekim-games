@@ -1,11 +1,75 @@
 import { randomUUID } from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
+import { writeSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const workspaceRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const composeFile = join(workspaceRoot, 'tools/test/postgres.compose.yml');
+const shutdownCleanups = new Set();
+const shutdownSignals =
+  process.platform === 'win32'
+    ? ['SIGINT', 'SIGTERM', 'SIGBREAK']
+    : ['SIGINT', 'SIGTERM', 'SIGHUP'];
+let shutdownHandlers;
+let shutdownInProgress = false;
+
+function removeShutdownHandlers() {
+  if (!shutdownHandlers) return;
+  for (const [signal, handler] of shutdownHandlers) {
+    process.removeListener(signal, handler);
+  }
+  shutdownHandlers = undefined;
+}
+
+async function handleShutdown(signal) {
+  if (shutdownInProgress) return;
+  shutdownInProgress = true;
+
+  let cleanupFailed = false;
+  for (const cleanup of [...shutdownCleanups].reverse()) {
+    try {
+      await cleanup();
+    } catch (error) {
+      cleanupFailed = true;
+      writeSync(
+        process.stderr.fd,
+        `Ошибка при очистке тестового окружения: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}\n`,
+      );
+    }
+  }
+
+  removeShutdownHandlers();
+  const exitCodes = { SIGINT: 130, SIGTERM: 143, SIGBREAK: 131, SIGHUP: 129 };
+  process.exit(cleanupFailed ? 1 : (exitCodes[signal] ?? 1));
+}
+
+export function registerShutdownCleanup(cleanup) {
+  shutdownCleanups.add(cleanup);
+
+  if (!shutdownHandlers) {
+    shutdownHandlers = new Map(
+      shutdownSignals.map((signal) => [
+        signal,
+        () => void handleShutdown(signal),
+      ]),
+    );
+    for (const [signal, handler] of shutdownHandlers) {
+      process.on(signal, handler);
+    }
+  }
+
+  let registered = true;
+  return () => {
+    if (!registered) return;
+    registered = false;
+    shutdownCleanups.delete(cleanup);
+    if (shutdownCleanups.size === 0 && !shutdownInProgress) {
+      removeShutdownHandlers();
+    }
+  };
+}
 
 export async function allocatePort() {
   const server = createServer();
@@ -91,10 +155,14 @@ function compose(args, env) {
     ],
     { cwd: workspaceRoot, env, stdio: 'inherit' },
   );
-  if (result.error) throw result.error;
+  if (result.error) {
+    throw new Error(`Не удалось выполнить docker compose ${args.join(' ')}`, {
+      cause: result.error,
+    });
+  }
   if (result.status !== 0) {
     throw new Error(
-      `docker compose завершилась с кодом ${result.status ?? 'signal'}`,
+      `docker compose ${args.join(' ')} завершилась с кодом ${result.status ?? 'signal'}`,
     );
   }
 }
@@ -116,20 +184,45 @@ export async function startIsolatedPostgres() {
     NX_SOCKET_DIR: join(workspaceRoot, '.nx/d'),
   };
 
+  let disposed = false;
+  let disposePromise;
+  const dispose = () => {
+    if (disposed) return Promise.resolve();
+    if (disposePromise) return disposePromise;
+
+    disposePromise = (async () => {
+      try {
+        compose(['down', '--volumes', '--remove-orphans'], env);
+        disposed = true;
+        unregisterShutdownCleanup();
+      } catch (error) {
+        disposePromise = undefined;
+        throw new Error(
+          `Не удалось удалить тестовый Compose-проект ${env.TEST_COMPOSE_PROJECT}`,
+          { cause: error },
+        );
+      }
+    })();
+
+    return disposePromise;
+  };
+
+  const unregisterShutdownCleanup = registerShutdownCleanup(dispose);
+
   try {
     compose(['up', '--detach', '--wait', '--wait-timeout', '90'], env);
     run('pnpm', ['exec', 'prisma', 'migrate', 'deploy'], env);
     return {
       env,
-      async dispose() {
-        compose(['down', '--volumes', '--remove-orphans'], env);
-      },
+      dispose,
     };
   } catch (error) {
     try {
-      compose(['down', '--volumes', '--remove-orphans'], env);
-    } catch {
-      // Preserve the original setup error; the unique Compose project can be removed manually.
+      await dispose();
+    } catch (cleanupError) {
+      process.stderr.write(
+        `Не удалось очистить тестовый Compose-проект ${env.TEST_COMPOSE_PROJECT}: ${cleanupError instanceof Error ? (cleanupError.stack ?? cleanupError.message) : String(cleanupError)}\n`,
+      );
     }
     throw error;
   }
