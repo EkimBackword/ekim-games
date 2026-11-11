@@ -1,0 +1,42 @@
+schema: spec-driven
+
+context: |
+  Язык документации: все спецификации, предложения (proposal), архитектурные планы (design) и списки задач (tasks) должны создаваться строго на русском языке.
+  Технические термины, названия переменных, эндпоинтов и фрагменты кода оставляй на английском языке.
+  ВАЖНО: В файлах спецификаций (specs/) сохраняй английские ключевые слова структуры (ADDED, MODIFIED, REMOVED, Requirement, Scenario, WHEN, THEN, AND), но сам текст требований и сценариев после них пиши на русском языке.
+  В теле каждого требования сохраняй английское ключевое слово SHALL или MUST.
+
+rules:
+  tasks:
+    - "В каждой задаче укажи, что проверяется, какие входные данные или исходные условия нужны и какой результат ожидается."
+
+# Project context (optional)
+# Add only constraints that should guide OpenSpec artifacts and workflows.
+# Include constraints an agent cannot infer by reading the code.
+# Keep general project documentation and discoverable codebase facts out.
+# Example:
+#   context: |
+#     Designs and tasks must cover Windows, macOS, and Linux
+#     Write all artifacts in Spanish
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
