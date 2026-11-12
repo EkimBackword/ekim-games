@@ -1,7 +1,4 @@
-import {
-  HttpErrorResponse,
-  HttpInterceptorFn,
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
@@ -10,10 +7,6 @@ import { HttpErrorService } from '../errors/http-error.service';
 
 function isApiRequest(url: string): boolean {
   return url.startsWith('/api/');
-}
-
-function isCredentialSubmission(url: string): boolean {
-  return url === '/api/auth/login' || url === '/api/auth/register';
 }
 
 export const httpErrorInterceptor: HttpInterceptorFn = (request, next) => {
@@ -28,17 +21,25 @@ export const httpErrorInterceptor: HttpInterceptorFn = (request, next) => {
       }
 
       if (error.status === 0) {
-        errors.show('Не удалось связаться с сервером. Проверьте подключение к интернету.');
+        errors.show(
+          'Не удалось связаться с сервером. Проверьте подключение к интернету.',
+        );
         return throwError(() => error);
       }
 
       switch (error.status) {
-        case 401:
-          if (!isCredentialSubmission(request.url)) {
+        case 401: {
+          const token = auth.accessToken();
+          const currentSessionRequest =
+            request.url === '/api/auth/refresh' ||
+            (token !== null &&
+              request.headers.get('Authorization') === `Bearer ${token}`);
+          if (currentSessionRequest && !auth.loggingOut()) {
             auth.expireSession();
             void router.navigateByUrl('/login');
           }
           break;
+        }
         case 403:
           errors.show('Недостаточно прав для выполнения действия.');
           break;

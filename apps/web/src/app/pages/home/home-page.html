@@ -1,68 +1,112 @@
 @if (auth.user(); as user) {
-  <section class="chat-panel" aria-labelledby="chat-title">
-    <div class="panel-heading">
-      <div>
-        <p class="eyebrow">Общайтесь и знакомьтесь</p>
-        <h1 id="chat-title">Общий чат</h1>
-      </div>
-      <span class="online-badge" [class.is-offline]="!chat.connected()">
-        <span></span>{{ chat.connected() ? 'Онлайн' : 'Подключение…' }}
-      </span>
+<section class="chat-panel" aria-labelledby="chat-title">
+  <div class="panel-heading">
+    <div>
+      <p class="eyebrow">Общайтесь и знакомьтесь</p>
+      <h1 id="chat-title">Общий чат</h1>
     </div>
+    <span class="online-badge" [class.is-offline]="!chat.connected()">
+      <span></span>{{ chat.connected() ? 'Онлайн' : 'Подключение…' }}
+    </span>
+  </div>
 
-    <div class="messages" aria-live="polite" aria-label="Сообщения чата">
-      @if (chat.loading()) {
-        <p role="status">Загружаем историю чата…</p>
-      } @else {
-        @for (message of chat.messages(); track message.id) {
-          <article
-            class="message"
-            [class.own-message]="message.authorNickname === user.nickname"
-          >
-            <div class="message-meta">
-              <strong>{{ message.authorNickname }}</strong>
-              <time [attr.datetime]="message.createdAt">
-                {{ message.createdAt | date: 'HH:mm' }}
-              </time>
-            </div>
-            <p>{{ message.text }}</p>
-          </article>
-        } @empty {
-        <div class="empty-state">
-          <span class="empty-icon" aria-hidden="true">✳</span>
-          <p>Здесь пока тихо. Начните разговор.</p>
-        </div>
+  <div
+    #messageList
+    class="messages"
+    aria-live="polite"
+    aria-label="Сообщения чата"
+  >
+    @if (chat.before()) {
+    <button
+      tuiButton
+      appearance="flat"
+      size="s"
+      type="button"
+      [disabled]="chat.loadingEarlier()"
+      (click)="chat.loadEarlier()"
+    >
+      Загрузить более ранние сообщения
+    </button>
+    } @if (chat.loading()) {
+    <p role="status">Загружаем историю чата…</p>
+    } @else { @for (message of chat.entries(); track message.key) {
+    <article
+      class="message"
+      [class.own-message]="message.authorNickname === user.nickname"
+    >
+      <div class="message-meta">
+        <strong>{{ message.authorNickname }}</strong>
+        <time [attr.datetime]="message.createdAt">
+          {{ message.createdAt | date: 'HH:mm' }}
+        </time>
+        @if (message.status; as status) {
+        <span
+          class="delivery-icon"
+          [class.delivery-error]="status === 'failed'"
+          role="img"
+          tabindex="0"
+          [attr.aria-label]="statuses[status].label"
+          [tuiHint]="statuses[status].label"
+          [tuiHintManual]="focusedStatus() === message.key ? true : null"
+          (focus)="focusedStatus.set(message.key)"
+          (blur)="focusedStatus.set(null)"
+        >
+          <tui-icon aria-hidden="true" [icon]="statuses[status].icon" />
+        </span>
+        <span class="visually-hidden" role="status"
+          >{{ statuses[status].label }}</span
+        >
         }
-      }
-    </div>
-
-    @if (chat.error(); as error) {
-      <p class="inline-error" role="status">{{ error }}</p>
-    }
-
-    <form class="message-form" (ngSubmit)="sendMessage()">
-      <tui-textfield class="message-input">
-        <label for="message" tuiLabel>Ваше сообщение</label>
-        <input
-          id="message"
-          tuiInput
-          name="message"
-          [(ngModel)]="draft"
-          maxlength="2000"
-          autocomplete="off"
-          placeholder="Напишите что-нибудь…"
-          aria-label="Текст сообщения"
-        />
-      </tui-textfield>
+      </div>
+      <p>{{ message.text }}</p>
+      @if (message.status === 'failed' && message.attemptId; as attemptId) {
       <button
-        appearance="primary"
         tuiButton
-        type="submit"
-        [disabled]="!draft.trim() || !chat.connected()"
+        appearance="flat"
+        size="xs"
+        type="button"
+        [disabled]="!chat.connected()"
+        (click)="chat.retry(attemptId)"
       >
-        Отправить
+        Отправить повторно
       </button>
-    </form>
-    <p class="message-hint">Сообщения видны всем участникам общего чата.</p>
-  </section>
+      }
+    </article>
+    } @empty {
+    <div class="empty-state">
+      <span class="empty-icon" aria-hidden="true">✳</span>
+      <p>Здесь пока тихо. Начните разговор.</p>
+    </div>
+    } }
+  </div>
+
+  @if (chat.error(); as error) {
+  <p class="inline-error" role="status">{{ error }}</p>
+  }
+
+  <form class="message-form" (ngSubmit)="sendMessage(messageList)">
+    <tui-textfield class="message-input">
+      <label for="message" tuiLabel>Ваше сообщение</label>
+      <input
+        id="message"
+        tuiInput
+        name="message"
+        [(ngModel)]="draft"
+        maxlength="2000"
+        autocomplete="off"
+        placeholder="Напишите что-нибудь…"
+        aria-label="Текст сообщения"
+      />
+    </tui-textfield>
+    <button
+      appearance="primary"
+      tuiButton
+      type="submit"
+      [disabled]="!draft.trim() || !chat.connected()"
+    >
+      Отправить
+    </button>
+  </form>
+  <p class="message-hint">Сообщения видны всем участникам общего чата.</p>
+</section>
 }

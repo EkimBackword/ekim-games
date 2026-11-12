@@ -7,6 +7,14 @@ import {
 
 export const appRoutes: Routes = [
   {
+    path: 'logout-error',
+    loadComponent: () =>
+      import('./pages/auth/logout-error-page').then(
+        (module) => module.LogoutErrorPage,
+      ),
+    title: 'Ошибка выхода — Ekim Games',
+  },
+  {
     path: '',
     canMatch: [authenticatedUserMatchGuard],
     pathMatch: 'full',

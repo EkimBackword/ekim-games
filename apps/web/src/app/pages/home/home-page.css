@@ -1,15 +1,15 @@
 :host {
   display: flex;
+  min-block-size: 20rem;
   flex: 1;
+  contain: size;
 }
 
 .chat-panel {
   display: flex;
   width: min(100%, 830px);
-  min-height: min(720px, calc(100dvh - 150px));
   flex: 1;
   flex-direction: column;
-  align-self: center;
   margin-block: 2rem;
   overflow: hidden;
   border: 1px solid #e8e7dc;
@@ -90,12 +90,16 @@
 
 .messages {
   display: flex;
-  min-height: 250px;
+  min-block-size: 0;
   flex: 1;
   flex-direction: column;
   gap: 0.8rem;
   overflow-y: auto;
   padding: 1.4rem 1.8rem;
+}
+
+.messages > * {
+  flex-shrink: 0;
 }
 
 .message {
@@ -185,6 +189,28 @@
   font-size: 0.83rem;
 }
 
+.delivery-icon {
+  display: inline-flex;
+  margin-inline-start: auto;
+}
+
+.delivery-icon tui-icon {
+  font-size: 1rem;
+}
+
+.delivery-error {
+  color: var(--tui-text-negative);
+}
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .message-form {
   align-items: stretch;
   gap: 0.8rem;
@@ -208,7 +234,6 @@
 
 @media (max-width: 720px) {
   .chat-panel {
-    min-height: calc(100dvh - 160px);
     margin-block: 1rem;
   }
 

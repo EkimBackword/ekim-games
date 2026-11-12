@@ -1,36 +1,51 @@
 import {
-  type ChatMessage,
-  type CreateChatMessageRequest,
-  chatMessageSchema,
-  createChatMessageRequestSchema,
+  type ChatDelivery,
+  type SendChatMessage,
+  chatDeliverySchema,
+  ownChatMessageSchema,
+  sendChatMessageSchema,
 } from './chat.contract';
 import { z } from 'zod';
 
-/** Имена первых Socket.IO-событий общего чата. */
 export const chatSocketEvents = {
   sendMessage: 'chat:send-message',
+  updateAuth: 'chat:update-auth',
   messageCreated: 'chat:message-created',
   error: 'chat:error',
 } as const;
 
-/** Схемы payload, принимаемых от клиента по Socket.IO. */
 export const chatSocketClientPayloadSchemas = {
-  [chatSocketEvents.sendMessage]: createChatMessageRequestSchema,
+  [chatSocketEvents.sendMessage]: sendChatMessageSchema,
+  [chatSocketEvents.updateAuth]: z.strictObject({
+    accessToken: z.string().min(1).max(4096),
+  }),
 } as const;
 
-/** Схемы payload, отправляемых сервером по Socket.IO. */
 export const chatSocketServerPayloadSchemas = {
-  [chatSocketEvents.messageCreated]: chatMessageSchema,
+  [chatSocketEvents.messageCreated]: chatDeliverySchema,
   [chatSocketEvents.error]: z.strictObject({ message: z.string().max(100) }),
 } as const;
 
-/** Типы обработчиков клиентских событий для типизации Socket.IO-сервера. */
+export const chatSendAckSchema = z.discriminatedUnion('ok', [
+  z.strictObject({ ok: z.literal(true), message: ownChatMessageSchema }),
+  z.strictObject({ ok: z.literal(false), error: z.string().max(100) }),
+]);
+export const chatAuthAckSchema = z.strictObject({ ok: z.boolean() });
+export type ChatSendAck = z.infer<typeof chatSendAckSchema>;
+export type ChatAuthAck = z.infer<typeof chatAuthAckSchema>;
+
 export type ChatSocketClientEvents = {
-  [chatSocketEvents.sendMessage]: (payload: CreateChatMessageRequest) => void;
+  [chatSocketEvents.sendMessage]: (
+    payload: SendChatMessage,
+    ack: (result: ChatSendAck) => void,
+  ) => void;
+  [chatSocketEvents.updateAuth]: (
+    payload: { accessToken: string },
+    ack: (result: ChatAuthAck) => void,
+  ) => void;
 };
 
-/** Типы обработчиков серверных событий для типизации Socket.IO-клиента. */
 export type ChatSocketServerEvents = {
-  [chatSocketEvents.messageCreated]: (payload: ChatMessage) => void;
+  [chatSocketEvents.messageCreated]: (payload: ChatDelivery) => void;
   [chatSocketEvents.error]: (payload: { message: string }) => void;
 };

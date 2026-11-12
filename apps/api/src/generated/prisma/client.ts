@@ -54,3 +54,8 @@ export type RefreshSession = Prisma.RefreshSessionModel
  * 
  */
 export type ChatMessage = Prisma.ChatMessageModel
+/**
+ * Model ChatPosition
+ * 
+ */
+export type ChatPosition = Prisma.ChatPositionModel

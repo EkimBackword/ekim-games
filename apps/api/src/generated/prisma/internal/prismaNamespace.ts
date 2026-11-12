@@ -399,7 +399,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   RefreshSession: 'RefreshSession',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  ChatPosition: 'ChatPosition'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "refreshSession" | "chatMessage"
+    modelProps: "user" | "refreshSession" | "chatMessage" | "chatPosition"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -641,6 +642,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChatPosition: {
+      payload: Prisma.$ChatPositionPayload<ExtArgs>
+      fields: Prisma.ChatPositionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChatPositionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChatPositionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>
+        }
+        findFirst: {
+          args: Prisma.ChatPositionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChatPositionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>
+        }
+        findMany: {
+          args: Prisma.ChatPositionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>[]
+        }
+        create: {
+          args: Prisma.ChatPositionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>
+        }
+        createMany: {
+          args: Prisma.ChatPositionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChatPositionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>[]
+        }
+        delete: {
+          args: Prisma.ChatPositionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>
+        }
+        update: {
+          args: Prisma.ChatPositionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChatPositionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChatPositionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChatPositionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChatPositionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChatPositionPayload>
+        }
+        aggregate: {
+          args: Prisma.ChatPositionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChatPosition>
+        }
+        groupBy: {
+          args: Prisma.ChatPositionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChatPositionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChatPositionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChatPositionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -707,10 +782,20 @@ export const ChatMessageScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   text: 'text',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  position: 'position',
+  clientMessageId: 'clientMessageId'
 } as const
 
 export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const ChatPositionScalarFieldEnum = {
+  id: 'id',
+  position: 'position'
+} as const
+
+export type ChatPositionScalarFieldEnum = (typeof ChatPositionScalarFieldEnum)[keyof typeof ChatPositionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -772,6 +857,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'BigInt'
+ */
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt[]'
+ */
+export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -782,6 +881,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -938,6 +1051,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   refreshSession?: Prisma.RefreshSessionOmit
   chatMessage?: Prisma.ChatMessageOmit
+  chatPosition?: Prisma.ChatPositionOmit
 }
 
 /* Types for Logging */

@@ -32,3 +32,42 @@ export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export const chatHistoryResponseSchema = z.array(chatMessageSchema);
 
 export type ChatHistoryResponse = z.infer<typeof chatHistoryResponseSchema>;
+
+export const chatPositionSchema = z
+  .string()
+  .regex(/^(0|[1-9][0-9]{0,18})$/)
+  .refine((value) => value.length < 19 || value <= '9223372036854775807');
+export const chatBeforeSchema = z.uuid();
+export const chatRecoveryQuerySchema = z.strictObject({
+  after: chatPositionSchema,
+  through: chatPositionSchema.optional(),
+});
+export const sendChatMessageSchema = createChatMessageRequestSchema.extend({
+  clientMessageId: z.uuid(),
+});
+export const ownChatMessageSchema = chatMessageSchema.extend({
+  clientMessageId: z.uuid(),
+});
+export const chatDeliverySchema = z.union([
+  ownChatMessageSchema,
+  chatMessageSchema,
+]);
+export const chatRecoveryResponseSchema = z.strictObject({
+  messages: z.array(chatDeliverySchema).max(50),
+  next: chatPositionSchema,
+  through: chatPositionSchema,
+});
+
+export const CHAT_RECONCILE_BATCH_SIZE = 50;
+
+export const reconcileChatRequestSchema = z.strictObject({
+  clientMessageIds: z.array(z.uuid()).min(1).max(CHAT_RECONCILE_BATCH_SIZE),
+});
+export const reconcileChatResponseSchema = z
+  .array(ownChatMessageSchema)
+  .max(CHAT_RECONCILE_BATCH_SIZE);
+
+export type ChatRecoveryResponse = z.infer<typeof chatRecoveryResponseSchema>;
+export type SendChatMessage = z.infer<typeof sendChatMessageSchema>;
+export type OwnChatMessage = z.infer<typeof ownChatMessageSchema>;
+export type ChatDelivery = z.infer<typeof chatDeliverySchema>;

@@ -1,14 +1,7 @@
-import {
-  createHash,
-  randomUUID,
-} from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 
 import * as argon2 from 'argon2';
-import {
-  type AuthResponse,
-  type AuthUser,
-  nicknameSchema,
-} from 'contracts';
+import { type AuthResponse, type AuthUser, nicknameSchema } from 'contracts';
 
 import {
   ConflictException,
@@ -17,6 +10,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Subject } from 'rxjs';
 
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -29,11 +23,17 @@ interface TokenClaims {
   typ: 'access' | 'refresh';
   jti?: string;
   nickname?: string;
+  exp?: number;
 }
 
 export interface AuthenticatedUser {
   id: string;
   nickname: string;
+}
+
+export interface AccessSession extends AuthenticatedUser {
+  sid: string;
+  exp: number;
 }
 
 export interface SessionAuthResponse extends AuthResponse {
@@ -43,6 +43,9 @@ export interface SessionAuthResponse extends AuthResponse {
 @Injectable()
 export class AuthService implements OnModuleInit {
   private dummyPasswordHash = '';
+  private readonly sessionOperations = new Map<string, Promise<unknown>>();
+  private readonly revoked = new Subject<string>();
+  readonly sessionRevoked = this.revoked.asObservable();
 
   constructor(
     private readonly prisma: PrismaService,
@@ -117,10 +120,7 @@ export class AuthService implements OnModuleInit {
 
     const suppliedHash = this.hashToken(rawToken);
     if (session.tokenHash !== suppliedHash) {
-      await this.prisma.refreshSession.updateMany({
-        where: { id: session.id, revokedAt: null },
-        data: { revokedAt: new Date() },
-      });
+      await this.revokeSession(session.id, session.userId);
       throw new UnauthorizedException(
         'Обнаружена повторная попытка использовать токен для обновления сессии',
       );
@@ -151,10 +151,7 @@ export class AuthService implements OnModuleInit {
       data: { tokenHash: this.hashToken(nextToken), expiresAt: nextExpiresAt },
     });
     if (rotated.count !== 1) {
-      await this.prisma.refreshSession.updateMany({
-        where: { id: session.id, revokedAt: null },
-        data: { revokedAt: new Date() },
-      });
+      await this.revokeSession(session.id, session.userId);
       throw new UnauthorizedException('Токен обновления уже использован');
     }
 
@@ -174,13 +171,20 @@ export class AuthService implements OnModuleInit {
       // Clearing an expired or invalid cookie is still a successful logout.
       return;
     }
-    await this.prisma.refreshSession.updateMany({
-      where: { id: claims.sid, userId: claims.sub, revokedAt: null },
-      data: { revokedAt: new Date() },
-    });
+    await this.revokeSession(claims.sid, claims.sub);
   }
 
-  async validateAccess(token: string): Promise<AuthenticatedUser> {
+  async authorizeSocket<T>(
+    token: string,
+    accept: (session: AccessSession) => T,
+  ): Promise<T> {
+    const { sid } = await this.verifyToken(token, 'access');
+    return this.withSession(sid, async () =>
+      accept(await this.validateAccess(token)),
+    );
+  }
+
+  async validateAccess(token: string): Promise<AccessSession> {
     const claims = await this.verifyToken(token, 'access');
     const session = await this.prisma.refreshSession.findFirst({
       where: {
@@ -191,12 +195,49 @@ export class AuthService implements OnModuleInit {
       },
       select: { id: true },
     });
-    if (!session) throw new UnauthorizedException('Сессия отозвана или срок её действия истёк');
+    if (!session)
+      throw new UnauthorizedException(
+        'Сессия отозвана или срок её действия истёк',
+      );
     const user = await this.prisma.user.findUnique({
       where: { id: claims.sub },
     });
-    if (!user) throw new UnauthorizedException('Учётная запись больше не существует');
-    return { id: user.id, nickname: user.nickname };
+    if (!user)
+      throw new UnauthorizedException('Учётная запись больше не существует');
+    if (typeof claims.exp !== 'number' || claims.exp * 1000 <= Date.now()) {
+      throw new UnauthorizedException('Срок действия access-токена истёк');
+    }
+    return {
+      id: user.id,
+      nickname: user.nickname,
+      sid: claims.sid,
+      exp: claims.exp,
+    };
+  }
+
+  private revokeSession(sid: string, userId: string): Promise<void> {
+    return this.withSession(sid, async () => {
+      const result = await this.prisma.refreshSession.updateMany({
+        where: { id: sid, userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      if (result.count) this.revoked.next(sid);
+    });
+  }
+
+  private async withSession<T>(
+    sid: string,
+    operation: () => Promise<T>,
+  ): Promise<T> {
+    const previous = this.sessionOperations.get(sid) ?? Promise.resolve();
+    const current = previous.then(operation, operation);
+    this.sessionOperations.set(sid, current);
+    try {
+      return await current;
+    } finally {
+      if (this.sessionOperations.get(sid) === current)
+        this.sessionOperations.delete(sid);
+    }
   }
 
   private async createSession(
@@ -241,6 +282,7 @@ export class AuthService implements OnModuleInit {
         sid: sessionId,
         typ: 'access',
         nickname,
+        jti: randomUUID(),
       } satisfies TokenClaims,
       { secret: this.accessSecret(), expiresIn: ACCESS_SECONDS },
     );
@@ -259,7 +301,9 @@ export class AuthService implements OnModuleInit {
       }
       return claims;
     } catch {
-      throw new UnauthorizedException('Недействительный токен или срок его действия истёк');
+      throw new UnauthorizedException(
+        'Недействительный токен или срок его действия истёк',
+      );
     }
   }
 
@@ -293,7 +337,9 @@ export class AuthService implements OnModuleInit {
   private accessSecret(): string {
     const access = this.secret('JWT_ACCESS_SECRET');
     if (access === process.env.JWT_REFRESH_SECRET) {
-      throw new Error('Секреты JWT для access- и refresh-токенов должны различаться');
+      throw new Error(
+        'Секреты JWT для access- и refresh-токенов должны различаться',
+      );
     }
     return access;
   }
@@ -301,7 +347,9 @@ export class AuthService implements OnModuleInit {
   private refreshSecret(): string {
     const refresh = this.secret('JWT_REFRESH_SECRET');
     if (refresh === process.env.JWT_ACCESS_SECRET) {
-      throw new Error('Секреты JWT для access- и refresh-токенов должны различаться');
+      throw new Error(
+        'Секреты JWT для access- и refresh-токенов должны различаться',
+      );
     }
     return refresh;
   }

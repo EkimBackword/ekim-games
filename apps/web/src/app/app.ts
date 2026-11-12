@@ -1,22 +1,10 @@
-import {
-  Component,
-  inject,
-} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  Router,
-  RouterLink,
-  RouterOutlet,
-} from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
-import {
-  switchMap,
-} from 'rxjs';
+import { switchMap } from 'rxjs';
 
-import {
-  TuiButton,
-  TuiRoot,
-} from '@taiga-ui/core';
+import { TuiButton, TuiRoot } from '@taiga-ui/core';
 
 import { AuthStoreService } from './core/auth/auth-store.service';
 import { HttpErrorService } from './core/errors/http-error.service';
@@ -40,7 +28,11 @@ export class App {
   logout(): void {
     this.auth
       .logout()
-      .pipe(switchMap(() => this.router.navigateByUrl('/login')))
+      .pipe(
+        switchMap((success) =>
+          this.router.navigateByUrl(success ? '/login' : '/logout-error'),
+        ),
+      )
       .subscribe();
   }
 }

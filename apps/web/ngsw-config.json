@@ -1,12 +1,7 @@
 {
   "$schema": "../../node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
-  "navigationUrls": [
-    "/**",
-    "!/**/*.*",
-    "!/api/**",
-    "!/socket.io/**"
-  ],
+  "navigationUrls": ["/**", "!/**/*.*", "!/api/**", "!/socket.io/**"],
   "assetGroups": [
     {
       "name": "app-shell",
@@ -21,7 +16,10 @@
           "/*.css",
           "/*.js",
           "/assets/taiga-ui/icons/eye.svg",
-          "/assets/taiga-ui/icons/eye-off.svg"
+          "/assets/taiga-ui/icons/eye-off.svg",
+          "/assets/taiga-ui/icons/clock.svg",
+          "/assets/taiga-ui/icons/check.svg",
+          "/assets/taiga-ui/icons/triangle-alert.svg"
         ]
       }
     }
