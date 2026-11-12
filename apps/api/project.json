@@ -5,6 +5,21 @@
   "projectType": "application",
   "tags": ["scope:api", "type:app"],
   "targets": {
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "outputs": ["{projectRoot}/src/generated/prisma"],
+      "options": {
+        "command": "pnpm db:generate"
+      }
+    },
+    "build": {
+      "dependsOn": ["...", "prisma-generate"],
+      "inputs": [
+        "...",
+        { "dependentTasksOutputFiles": "apps/api/src/generated/prisma/**/*" }
+      ]
+    },
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
@@ -43,6 +58,7 @@
       "executor": "nx:noop"
     },
     "integration-test": {
+      "dependsOn": ["prisma-generate"],
       "executor": "nx:run-commands",
       "cache": false,
       "options": {

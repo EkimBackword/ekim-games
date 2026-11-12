@@ -8,6 +8,7 @@ node_modules/
 dist/
 coverage/
 out-tsc/
+/apps/api/src/generated/prisma/
 playwright-report/
 test-results/
 blob-report/

@@ -7,6 +7,7 @@ node_modules
 dist
 coverage
 out-tsc
+apps/api/src/generated/prisma
 .env
 .env.*
 !.env.example

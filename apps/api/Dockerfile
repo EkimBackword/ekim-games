@@ -12,8 +12,6 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-# The placeholder satisfies Prisma 7 config during generation; it is not used to connect.
-RUN DATABASE_URL='postgresql://build:build@127.0.0.1:5432/build?schema=public' MIGRATION_DATABASE_URL='postgresql://build:build@127.0.0.1:5432/build?schema=public' pnpm db:generate
 RUN pnpm nx build api --configuration=production
 RUN pnpm nx run api:prune
 

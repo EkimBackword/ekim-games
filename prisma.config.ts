@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
 
-const migrationDatabaseUrl = env('MIGRATION_DATABASE_URL');
-const shadowDatabaseUrl = new URL(
-  process.env.SHADOW_DATABASE_URL ?? migrationDatabaseUrl,
-);
+const migrationDatabaseUrl = process.env.MIGRATION_DATABASE_URL;
+const shadowDatabaseUrl = migrationDatabaseUrl
+  ? new URL(process.env.SHADOW_DATABASE_URL ?? migrationDatabaseUrl)
+  : undefined;
 
-if (!process.env.SHADOW_DATABASE_URL) {
+if (shadowDatabaseUrl && !process.env.SHADOW_DATABASE_URL) {
   shadowDatabaseUrl.pathname = '/ekim_games_shadow';
 }
 
@@ -15,8 +15,10 @@ export default defineConfig({
   migrations: {
     path: 'apps/api/prisma/migrations',
   },
-  datasource: {
-    url: migrationDatabaseUrl,
-    shadowDatabaseUrl: shadowDatabaseUrl.toString(),
-  },
+  datasource: migrationDatabaseUrl
+    ? {
+        url: migrationDatabaseUrl,
+        shadowDatabaseUrl: shadowDatabaseUrl?.toString(),
+      }
+    : undefined,
 });

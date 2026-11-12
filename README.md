@@ -33,9 +33,10 @@ pnpm db:up
 # дождитесь статуса healthy у контейнера postgres в Docker Desktop
 pnpm db:roles
 pnpm db:migrate
-pnpm db:generate
 pnpm dev
 ```
+
+Nx генерирует Prisma Client перед сборкой API и интеграционными тестами. Генерация выполняется без подключения к PostgreSQL и без `.env`. Для отдельной генерации используйте `pnpm db:generate`.
 
 Если volume PostgreSQL уже содержит базу, `POSTGRES_PASSWORD` применяется не повторно: значение в `.env` само по себе не меняет пароль существующей роли `ekim_games`. Если пароль в `.env` отличается от установленного в базе, смените пароль роли через локальное подключение к контейнеру:
 
