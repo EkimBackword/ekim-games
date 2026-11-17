@@ -1,13 +1,55 @@
-<section class="welcome-layout">
-  <div class="welcome-copy">
-    <p class="eyebrow">Игры лучше вместе</p>
-    <h1>Ваше место<br />для <span>общения</span></h1>
-    <p class="welcome-description">
-      Собирайтесь за виртуальным столом, знакомьтесь и обсуждайте любимые игры.
-    </p>
-  </div>
+<section class="rpg-table">
+  <div class="rpg-content">
+    <header class="rpg-brand">
+      <span>Ekim Games</span>
+    </header>
 
-  <div class="auth-form-slot">
-    <router-outlet />
+    <div class="rpg-layout">
+      <div class="rpg-welcome">
+        <h1>Ваше место<br />для <em>игры</em><br />и <em>общения</em></h1>
+        <p>
+          Собирайтесь за столом, чтобы отвлечься от реальности и поиграть в игры
+          вместе с друзьями.
+        </p>
+      </div>
+
+      <div class="rpg-parchment">
+        <img
+          class="rpg-panel-mark"
+          src="/assets/rpg/icons/icon-96x96.png"
+          width="96"
+          height="96"
+          alt=""
+        />
+        <nav class="rpg-navigation" aria-label="Вход и регистрация">
+          <a
+            tuiButton
+            appearance="flat"
+            routerLink="/login"
+            routerLinkActive="rpg-current"
+            [routerLinkActiveOptions]="activeLinkOptions"
+            ariaCurrentWhenActive="page"
+            >Вход</a
+          >
+          <a
+            tuiButton
+            appearance="flat"
+            routerLink="/register"
+            routerLinkActive="rpg-current"
+            [routerLinkActiveOptions]="activeLinkOptions"
+            ariaCurrentWhenActive="page"
+            >Регистрация</a
+          >
+        </nav>
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+  <div class="rpg-decor" aria-hidden="true">
+    <span class="rpg-warrior"></span>
+    <span class="rpg-wizard"></span>
+    <span class="rpg-archer"></span>
+    <span class="rpg-die"></span>
+    <span class="rpg-coins"></span>
   </div>
 </section>

@@ -1,1 +1,153 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: only light;
+
+  --rpg-color-wood: #57321f;
+  --rpg-color-wood-overlay-start: rgb(38 17 8 / 38%);
+  --rpg-color-wood-overlay-end: rgb(38 17 8 / 48%);
+  --rpg-color-parchment: #f5dfc0;
+  --rpg-color-parchment-shadow: rgb(27 11 4 / 65%);
+  --rpg-color-ink: #362419;
+  --rpg-color-ink-muted: #604631;
+  --rpg-color-on-wood: #fff2d6;
+  --rpg-color-cream: #fff2dc;
+  --rpg-color-cream-hover: #f6dfbc;
+  --rpg-color-cream-pressed: #eacb9f;
+  --rpg-color-field-border: #98754e;
+
+  --rpg-color-primary: #316738;
+  --rpg-color-primary-hover: #28572f;
+  --rpg-color-primary-pressed: #214628;
+  --rpg-color-on-primary: #fff;
+  --rpg-color-gold: #d5a15d;
+  --rpg-color-gold-hover: #d2994c;
+  --rpg-color-gold-pressed: #c88c3f;
+  --rpg-color-link: #2466b1;
+  --rpg-color-flat-pressed: #ffeac7;
+  --rpg-color-outline-border: #8a684c;
+  --rpg-color-outline-border-hover: #754e2e;
+  --rpg-color-destructive: #a04633;
+
+  --rpg-color-shell-ink: #20352e;
+  --rpg-color-shell-glow: rgb(233 241 218 / 72%);
+  --rpg-color-shell-surface: #f7f6f0;
+  --rpg-color-shell-divider: #e9e9df;
+  --rpg-color-shell-ink-muted: #66736b;
+  --rpg-color-footer-text: #969b92;
+  --rpg-color-error-notice-border: #e7c5bd;
+  --rpg-color-error-notice-surface: #fff4f0;
+  --rpg-color-error-notice-text: #8f3028;
+  --rpg-color-offline-notice-border: #d5a66f;
+  --rpg-color-offline-notice-surface: #fff7e8;
+  --rpg-color-offline-notice-text: #70451f;
+
+  --rpg-color-auth-tab-active: #174f8e;
+  --rpg-color-auth-title-shadow: #241208;
+  --rpg-color-auth-highlight: #c8db91;
+  --rpg-color-auth-tab-divider: #ad885b;
+  --rpg-color-auth-decoration-shadow: rgb(20 8 2 / 70%);
+  --rpg-color-form-error: #8d231e;
+
+  --rpg-color-chat-divider: #b68b5e;
+  --rpg-color-chat-kicker: #754922;
+  --rpg-color-online-text: #3d5836;
+  --rpg-color-online-indicator: #79a66b;
+  --rpg-color-online-indicator-ring: #edf4e9;
+  --rpg-color-connecting-indicator: #c6a36c;
+  --rpg-color-connecting-indicator-ring: #f5efe3;
+  --rpg-color-message-border: #cba579;
+  --rpg-color-own-message-border: #a9b38c;
+  --rpg-color-own-message-surface: #eef0db;
+  --rpg-color-message-author: #50634d;
+  --rpg-color-message-time: #5f584d;
+  --rpg-color-message-text: #303d35;
+  --rpg-color-empty-state-icon: #b4834c;
+  --rpg-color-delivery-error: #ad3f39;
+
+  --rpg-wood:
+    linear-gradient(
+      var(--rpg-color-wood-overlay-start),
+      var(--rpg-color-wood-overlay-end)
+    ),
+    var(--rpg-color-wood) url('/assets/rpg/backgrounds/wood.webp') center / 30rem;
+}
+
+.rpg-parchment {
+  --tui-text-primary: var(--rpg-color-ink);
+  --tui-text-secondary: var(--rpg-color-ink-muted);
+  --tui-background-base: var(--rpg-color-cream);
+  --tui-background-base-alt: var(--rpg-color-cream);
+  --tui-border-normal: var(--rpg-color-field-border);
+  --tui-background-accent-1: var(--rpg-color-primary);
+  --tui-background-accent-1-hover: var(--rpg-color-primary-hover);
+  --tui-background-accent-1-pressed: var(--rpg-color-primary-pressed);
+  --tui-text-primary-on-accent-1: var(--rpg-color-on-primary);
+
+  min-width: 0;
+  border: 18px solid var(--rpg-color-parchment);
+  border-image: url('/assets/rpg/backgrounds/parchment-9slice.png') 125 fill /
+    42px / 12px stretch;
+  background: var(--rpg-color-parchment) url('/assets/rpg/backgrounds/paper.webp')
+    center / 28rem padding-box;
+  color: var(--rpg-color-ink);
+  filter: drop-shadow(0 13px 13px var(--rpg-color-parchment-shadow));
+}
+
+[tuiButton][data-appearance='primary'] {
+  --tui-background-accent-1: var(--rpg-color-primary);
+  --tui-background-accent-1-hover: var(--rpg-color-primary-hover);
+  --tui-background-accent-1-pressed: var(--rpg-color-primary-pressed);
+  --tui-text-primary-on-accent-1: var(--rpg-color-on-primary);
+}
+
+[tuiButton][data-appearance='secondary'] {
+  --tui-background-neutral-1: var(--rpg-color-cream);
+  --tui-background-neutral-1-hover: var(--rpg-color-cream-hover);
+  --tui-background-neutral-1-pressed: var(--rpg-color-cream-pressed);
+  --tui-text-action: var(--rpg-color-ink);
+}
+
+[tuiButton][data-appearance='accent'] {
+  --tui-background-accent-2: var(--rpg-color-gold);
+  --tui-background-accent-2-hover: var(--rpg-color-gold-hover);
+  --tui-background-accent-2-pressed: var(--rpg-color-gold-pressed);
+  --tui-text-primary-on-accent-2: var(--rpg-color-ink);
+}
+
+[tuiButton][data-appearance='flat'] {
+  --tui-text-action: var(--rpg-color-link);
+  --tui-background-neutral-1-hover: var(--rpg-color-cream);
+  --tui-background-neutral-1-pressed: var(--rpg-color-flat-pressed);
+}
+
+[tuiButton][data-appearance='outline'] {
+  --tui-text-action: var(--rpg-color-wood);
+  --tui-border-normal: var(--rpg-color-outline-border);
+  --tui-border-hover: var(--rpg-color-outline-border-hover);
+  --tui-background-neutral-1: var(--rpg-color-cream-hover);
+}
+
+[tuiButton][data-appearance='primary-destructive'] {
+  --tui-status-negative: var(--rpg-color-destructive);
+}
+
+[tuiButton][data-appearance='primary-destructive'][data-state='active'],
+[tuiButton][data-appearance='primary-destructive'][tuiAppearance]:active:not(
+    :disabled,
+    [data-state]
+  ):where(:hover, :focus-visible) {
+  filter: saturate(1.2) brightness(0.88);
+}
+
+[tuiButton][data-appearance='primary-destructive'][data-state='hover'] {
+  filter: saturate(1.1) brightness(0.95);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [tuiButton][data-appearance='primary-destructive'][tuiAppearance]:hover:not(
+      :disabled,
+      :active,
+      [data-state]
+    ) {
+    filter: saturate(1.1) brightness(0.95);
+  }
+}

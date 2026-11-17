@@ -84,6 +84,7 @@
     "@taiga-ui/cdk": "^5.28.0",
     "@taiga-ui/core": "^5.28.0",
     "@taiga-ui/icons": "^5.28.0",
+    "@taiga-ui/i18n": "5.28.0",
     "@taiga-ui/kit": "^5.28.0",
     "@taiga-ui/styles": "^5.28.0",
     "argon2": "^0.45.1",

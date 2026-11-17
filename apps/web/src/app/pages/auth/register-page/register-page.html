@@ -1,13 +1,4 @@
-<form class="auth-card" [formGroup]="form" (ngSubmit)="submit()">
-  <div class="auth-heading">
-    <span class="auth-mark" aria-hidden="true">✳</span>
-    <div>
-      <p class="eyebrow">Присоединяйтесь</p>
-      <h2>Создать аккаунт</h2>
-    </div>
-  </div>
-  <p class="auth-subtitle">Зарегистрируйтесь, чтобы присоединиться к чату.</p>
-
+<form class="rpg-auth-card" [formGroup]="form" (ngSubmit)="submit()">
   <tui-textfield>
     <label for="nickname" tuiLabel>Никнейм</label>
     <input
@@ -20,12 +11,19 @@
       required
     />
   </tui-textfield>
-  @if (form.controls.nickname.touched && form.controls.nickname.hasError('required')) {
-    <p class="field-error" role="alert">Введите никнейм.</p>
-  } @else if (form.controls.nickname.touched && form.controls.nickname.hasError('minlength')) {
-    <p class="field-error" role="alert">Никнейм должен содержать не менее 3 символов.</p>
-  } @else if (form.controls.nickname.touched && form.controls.nickname.hasError('maxlength')) {
-    <p class="field-error" role="alert">Никнейм должен содержать не более 24 символов.</p>
+  @if (form.controls.nickname.touched &&
+  form.controls.nickname.hasError('required')) {
+  <p class="rpg-field-error" role="alert">Введите никнейм.</p>
+  } @else if (form.controls.nickname.touched &&
+  form.controls.nickname.hasError('minlength')) {
+  <p class="rpg-field-error" role="alert">
+    Никнейм должен содержать не менее 3 символов.
+  </p>
+  } @else if (form.controls.nickname.touched &&
+  form.controls.nickname.hasError('maxlength')) {
+  <p class="rpg-field-error" role="alert">
+    Никнейм должен содержать не более 24 символов.
+  </p>
   }
 
   <tui-textfield>
@@ -42,12 +40,19 @@
     />
     <tui-icon tuiPassword />
   </tui-textfield>
-  @if (form.controls.password.touched && form.controls.password.hasError('required')) {
-    <p class="field-error" role="alert">Введите пароль.</p>
-  } @else if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
-    <p class="field-error" role="alert">Пароль должен содержать не менее 12 символов.</p>
-  } @else if (form.controls.password.touched && form.controls.password.hasError('maxlength')) {
-    <p class="field-error" role="alert">Пароль должен содержать не более 128 символов.</p>
+  @if (form.controls.password.touched &&
+  form.controls.password.hasError('required')) {
+  <p class="rpg-field-error" role="alert">Введите пароль.</p>
+  } @else if (form.controls.password.touched &&
+  form.controls.password.hasError('minlength')) {
+  <p class="rpg-field-error" role="alert">
+    Пароль должен содержать не менее 12 символов.
+  </p>
+  } @else if (form.controls.password.touched &&
+  form.controls.password.hasError('maxlength')) {
+  <p class="rpg-field-error" role="alert">
+    Пароль должен содержать не более 128 символов.
+  </p>
   }
 
   <tui-textfield>
@@ -62,18 +67,18 @@
     />
     <tui-icon tuiPassword />
   </tui-textfield>
-  @if (form.controls.confirmPassword.touched && form.controls.confirmPassword.hasError('required')) {
-    <p class="field-error" role="alert">Повторите пароль.</p>
-  } @else if (form.controls.confirmPassword.touched && form.hasError('passwordMismatch')) {
-    <p class="field-error" role="alert">Пароли не совпадают.</p>
-  }
-
-  @if (formError(); as error) {
-    <p class="inline-error" role="alert">{{ error }}</p>
+  @if (form.controls.confirmPassword.touched &&
+  form.controls.confirmPassword.hasError('required')) {
+  <p class="rpg-field-error" role="alert">Повторите пароль.</p>
+  } @else if (form.controls.confirmPassword.touched &&
+  form.hasError('passwordMismatch')) {
+  <p class="rpg-field-error" role="alert">Пароли не совпадают.</p>
+  } @if (formError(); as error) {
+  <p class="rpg-inline-error" role="alert">{{ error }}</p>
   }
 
   <button
-    class="auth-submit"
+    class="rpg-auth-submit"
     appearance="primary"
     tuiButton
     type="submit"
@@ -82,11 +87,5 @@
   >
     Создать аккаунт
   </button>
-  <p class="switch-auth">
-    Уже есть аккаунт?
-    <a class="text-button" routerLink="/login">Войти</a>
-  </p>
-  <p class="password-note">
-    Пароль должен содержать не менее 12 символов.
-  </p>
+  <p class="rpg-password-note">Пароль должен содержать не менее 12 символов.</p>
 </form>

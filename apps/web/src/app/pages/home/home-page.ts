@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
 import {
-  afterNextRender,
+  afterRenderEffect,
   Component,
+  ElementRef,
   effect,
   inject,
-  Injector,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -35,9 +36,12 @@ import { ChatStoreService } from '../../core/chat/chat-store.service';
   styleUrl: './home-page.css',
 })
 export class HomePage {
-  private readonly injector = inject(Injector);
+  private readonly messageList =
+    viewChild<ElementRef<HTMLDivElement>>('messageList');
+  private initializedList?: HTMLDivElement;
   protected readonly auth = inject(AuthStoreService);
   protected readonly chat = inject(ChatStoreService);
+  protected readonly atLatest = signal(true);
   protected readonly focusedStatus = signal<string | null>(null);
   protected readonly statuses = {
     sending: { label: 'Отправляется', icon: '@tui.clock' },
@@ -54,22 +58,68 @@ export class HomePage {
         else this.chat.disconnect();
       });
     });
+
+    afterRenderEffect({
+      earlyRead: () => {
+        const list = this.messageList()?.nativeElement;
+        const entries = this.chat.entries();
+        const loading = this.chat.loading();
+        if (!list || loading || !entries.length) return;
+
+        return {
+          list,
+          bottom:
+            this.initializedList !== list || untracked(this.atLatest)
+              ? list.scrollHeight
+              : null,
+        };
+      },
+      write: (scroll) => {
+        const position = scroll();
+        if (position && position.bottom !== null) {
+          position.list.scrollTop = position.bottom;
+          this.initializedList = position.list;
+        }
+        return position;
+      },
+      read: (scroll) => {
+        const list = scroll()?.list;
+        if (list) this.updateScrollPosition(list);
+      },
+    });
+
+    afterRenderEffect({
+      read: (onCleanup) => {
+        const list = this.messageList()?.nativeElement;
+        if (!list) return;
+
+        const observer = new ResizeObserver(() =>
+          this.updateScrollPosition(list),
+        );
+        observer.observe(list);
+        onCleanup(() => observer.disconnect());
+      },
+    });
   }
 
-  sendMessage(messageList: HTMLDivElement): void {
+  protected updateScrollPosition(list: HTMLDivElement): void {
+    this.atLatest.set(
+      list.scrollHeight - list.clientHeight - list.scrollTop <= 1,
+    );
+  }
+
+  protected scrollToLatest(list: HTMLDivElement): void {
+    list.focus({ preventScroll: true });
+    list.scrollTop = list.scrollHeight;
+    this.updateScrollPosition(list);
+  }
+
+  sendMessage(): void {
     const user = this.auth.user();
     if (!user || !this.draft.trim()) return;
     if (!this.chat.send(this.draft, user.nickname)) return;
 
     this.draft = '';
-    afterNextRender(
-      {
-        earlyRead: () => messageList.scrollHeight,
-        write: (bottom) => {
-          messageList.scrollTop = bottom;
-        },
-      },
-      { injector: this.injector },
-    );
+    this.atLatest.set(true);
   }
 }

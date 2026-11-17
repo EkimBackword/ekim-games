@@ -2,6 +2,7 @@ import {
   isDevMode,
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
+  signal,
 } from '@angular/core';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideRouter } from '@angular/router';
@@ -10,6 +11,7 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { provideTaiga } from '@taiga-ui/core';
+import { TUI_LANGUAGE, TUI_RUSSIAN_LANGUAGE } from '@taiga-ui/i18n';
 import { appRoutes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { httpErrorInterceptor } from './core/interceptors/http-error.interceptor';
@@ -25,6 +27,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor, httpErrorInterceptor]),
     ),
-    provideTaiga(),
+    provideTaiga({ mode: 'light' }),
+    {
+      provide: TUI_LANGUAGE,
+      useValue: signal(TUI_RUSSIAN_LANGUAGE),
+    },
   ],
 };

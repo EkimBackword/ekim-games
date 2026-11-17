@@ -3,75 +3,183 @@
   flex: 1;
 }
 
-.welcome-layout {
+.rpg-table {
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  overflow: clip;
+  color: var(--rpg-color-on-wood);
+  background: var(--rpg-wood);
+}
+
+.rpg-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding: 1.25rem clamp(0.875rem, 4vw, 3rem) 2.5rem;
+}
+
+.rpg-brand {
+  display: flex;
+  align-items: center;
+  padding-block: 0.25rem 0.8rem;
+  border-bottom: 1px solid var(--rpg-color-gold);
+  font:
+    bold 1.55rem Georgia,
+    serif;
+}
+
+.rpg-layout {
   display: grid;
   flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
   align-items: center;
-  grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.72fr);
-  gap: clamp(3rem, 8vw, 8rem);
-  padding-block: 4.5rem;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(2.5rem, 8vh, 6rem);
 }
 
-.auth-form-slot {
-  grid-column: 2;
+.rpg-welcome h1 {
+  margin: 0;
+  font:
+    bold clamp(2.7rem, 5vw, 4.6rem) / 0.99 Georgia,
+    serif;
+  letter-spacing: -0.045em;
+  text-shadow: 0 3px 10px var(--rpg-color-auth-title-shadow);
+}
+
+.rpg-welcome em {
+  color: var(--rpg-color-auth-highlight);
+}
+
+.rpg-welcome p {
+  max-width: 48ch;
+  margin: 1.3rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rpg-color-gold);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.rpg-panel-mark {
+  display: block;
+  margin-inline: auto;
+}
+
+.rpg-parchment {
+  padding: clamp(0.75rem, 3vw, 1.6rem);
+}
+
+.rpg-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid var(--rpg-color-auth-tab-divider);
+}
+
+.rpg-navigation a[tuiButton] {
   min-width: 0;
+  padding-inline: 0.25rem;
+  border-radius: 0;
+  box-shadow: inset 0 -3px transparent;
 }
 
-.auth-form-slot > router-outlet {
+.rpg-navigation a.rpg-current {
+  box-shadow: inset 0 -3px var(--rpg-color-auth-tab-active);
+}
+
+.rpg-navigation a:focus-visible {
+  outline: 2px solid var(--rpg-color-auth-tab-active);
+  outline-offset: -2px;
+}
+
+.rpg-decor {
   display: none;
 }
 
-.eyebrow {
-  margin: 0 0 0.75rem;
-  color: #a16c3e;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.welcome-copy h1 {
-  margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(3.4rem, 6vw, 5.6rem);
-  font-weight: 500;
-  letter-spacing: -0.07em;
-  line-height: 0.99;
-}
-
-.welcome-copy h1 span {
-  color: #648456;
-  font-style: italic;
-}
-
-.welcome-description {
-  max-width: 26rem;
-  margin: 1.7rem 0 2rem;
-  color: #68746c;
-  font-size: 1.04rem;
-  line-height: 1.7;
-}
-
-:host-context([tuiTheme='dark']) .welcome-copy h1 {
-  color: #f0eee6;
-}
-
-:host-context([tuiTheme='dark']) .welcome-description {
-  color: #c2c3bb;
-}
-
-@media (max-width: 720px) {
-  .welcome-layout {
-    grid-template-columns: 1fr;
-    gap: 2.2rem;
-    padding-block: 2.5rem;
+@media (min-width: 55rem) {
+  .rpg-decor {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
   }
 
-  .auth-form-slot {
-    grid-column: 1;
+  .rpg-decor span {
+    position: absolute;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 8px 7px var(--rpg-color-auth-decoration-shadow));
   }
 
-  .welcome-copy h1 {
-    font-size: clamp(3.25rem, 15vw, 4.5rem);
+  .rpg-warrior,
+  .rpg-wizard,
+  .rpg-archer {
+    width: clamp(6rem, 12vw, 11rem);
+    aspect-ratio: 1;
+    background-position: center;
+    background-size: contain;
+  }
+
+  .rpg-warrior {
+    bottom: 1.5rem;
+    left: 2%;
+    background-image: url('/assets/rpg/characters/01_red_warrior.png');
+    transform: rotate(-12deg);
+  }
+
+  .rpg-wizard {
+    top: 8%;
+    right: 1%;
+    background-image: url('/assets/rpg/characters/02_blue_wizard.png');
+    transform: rotate(12deg);
+  }
+
+  .rpg-archer {
+    right: 1%;
+    bottom: 2%;
+    background-image: url('/assets/rpg/characters/03_green_archer.png');
+    transform: rotate(9deg);
+  }
+
+  .rpg-die {
+    bottom: 4%;
+    left: 19%;
+    width: 4.4rem;
+    aspect-ratio: 253 / 284;
+    background-image: url('/assets/rpg/dice/d20-with-value.png');
+    background-size: 495.65% 441.55%;
+    background-position: 34.37% 1.75%;
+    transform: rotate(13deg);
+  }
+
+  .rpg-coins {
+    top: 14%;
+    left: 3%;
+    width: 5.4rem;
+    aspect-ratio: 184 / 167;
+    background-image: url('/assets/rpg/fantasy-rpg-production-bundle/fantasy-rpg-atlas-production.png');
+    background-size: 1072.28% 682.04%;
+    background-position: 70.1% 78.19%;
+    transform: rotate(-10deg);
+  }
+}
+
+@media (width < 55rem) {
+  .rpg-brand {
+    justify-content: center;
+  }
+
+  .rpg-layout {
+    grid-template-columns: minmax(0, 27rem);
+    align-content: start;
+    justify-content: center;
+    padding-block: 1.85rem 0;
+  }
+
+  .rpg-welcome {
+    display: none;
   }
 }

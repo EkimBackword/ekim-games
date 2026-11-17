@@ -1,5 +1,5 @@
 @if (auth.user(); as user) {
-<section class="chat-panel" aria-labelledby="chat-title">
+<section class="chat-panel rpg-parchment" aria-labelledby="chat-title">
   <div class="panel-heading">
     <div>
       <p class="eyebrow">Общайтесь и знакомьтесь</p>
@@ -10,81 +10,100 @@
     </span>
   </div>
 
-  <div
-    #messageList
-    class="messages"
-    aria-live="polite"
-    aria-label="Сообщения чата"
-  >
-    @if (chat.before()) {
-    <button
-      tuiButton
-      appearance="flat"
-      size="s"
-      type="button"
-      [disabled]="chat.loadingEarlier()"
-      (click)="chat.loadEarlier()"
+  <div class="chat-history">
+    <div
+      #messageList
+      class="messages"
+      role="region"
+      aria-live="polite"
+      aria-label="Сообщения чата"
+      tabindex="0"
+      (scroll)="updateScrollPosition(messageList)"
     >
-      Загрузить более ранние сообщения
-    </button>
-    } @if (chat.loading()) {
-    <p role="status">Загружаем историю чата…</p>
-    } @else { @for (message of chat.entries(); track message.key) {
-    <article
-      class="message"
-      [class.own-message]="message.authorNickname === user.nickname"
-    >
-      <div class="message-meta">
-        <strong>{{ message.authorNickname }}</strong>
-        <time [attr.datetime]="message.createdAt">
-          {{ message.createdAt | date: 'HH:mm' }}
-        </time>
-        @if (message.status; as status) {
-        <span
-          class="delivery-icon"
-          [class.delivery-error]="status === 'failed'"
-          role="img"
-          tabindex="0"
-          [attr.aria-label]="statuses[status].label"
-          [tuiHint]="statuses[status].label"
-          [tuiHintManual]="focusedStatus() === message.key ? true : null"
-          (focus)="focusedStatus.set(message.key)"
-          (blur)="focusedStatus.set(null)"
-        >
-          <tui-icon aria-hidden="true" [icon]="statuses[status].icon" />
-        </span>
-        <span class="visually-hidden" role="status"
-          >{{ statuses[status].label }}</span
-        >
-        }
-      </div>
-      <p>{{ message.text }}</p>
-      @if (message.status === 'failed' && message.attemptId; as attemptId) {
+      @if (chat.before()) {
       <button
         tuiButton
         appearance="flat"
-        size="xs"
+        size="s"
         type="button"
-        [disabled]="!chat.connected()"
-        (click)="chat.retry(attemptId)"
+        [disabled]="chat.loadingEarlier()"
+        (click)="chat.loadEarlier()"
       >
-        Отправить повторно
+        Загрузить более ранние сообщения
       </button>
-      }
-    </article>
-    } @empty {
-    <div class="empty-state">
-      <span class="empty-icon" aria-hidden="true">✳</span>
-      <p>Здесь пока тихо. Начните разговор.</p>
+      } @if (chat.loading()) {
+      <p role="status">Загружаем историю чата…</p>
+      } @else { @for (message of chat.entries(); track message.key) {
+      <article
+        class="message"
+        [class.own-message]="message.authorNickname === user.nickname"
+      >
+        <div class="message-meta">
+          <strong>{{ message.authorNickname }}</strong>
+          <time [attr.datetime]="message.createdAt">
+            {{ message.createdAt | date: 'HH:mm' }}
+          </time>
+          @if (message.status; as status) {
+          <span
+            class="delivery-icon"
+            [class.delivery-error]="status === 'failed'"
+            role="img"
+            tabindex="0"
+            [attr.aria-label]="statuses[status].label"
+            [tuiHint]="statuses[status].label"
+            [tuiHintManual]="focusedStatus() === message.key ? true : null"
+            (focus)="focusedStatus.set(message.key)"
+            (blur)="focusedStatus.set(null)"
+          >
+            <tui-icon aria-hidden="true" [icon]="statuses[status].icon" />
+          </span>
+          <span class="visually-hidden" role="status"
+            >{{ statuses[status].label }}</span
+          >
+          }
+        </div>
+        <p>{{ message.text }}</p>
+        @if (message.status === 'failed' && message.attemptId; as attemptId) {
+        <button
+          tuiButton
+          appearance="flat"
+          size="xs"
+          type="button"
+          [disabled]="!chat.connected()"
+          (click)="chat.retry(attemptId)"
+        >
+          Отправить повторно
+        </button>
+        }
+      </article>
+      } @empty {
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">✳</span>
+        <p>Здесь пока тихо. Начните разговор.</p>
+      </div>
+      } }
     </div>
-    } }
+    @if (!atLatest()) {
+    <button
+      class="scroll-to-latest"
+      tuiIconButton
+      appearance="floating"
+      iconStart="@tui.arrow-down"
+      size="s"
+      type="button"
+      tuiHint="К новым сообщениям"
+      (click)="scrollToLatest(messageList)"
+    >
+      К новым сообщениям
+    </button>
+    }
   </div>
 
   @if (chat.error(); as error) {
   <p class="inline-error" role="status">{{ error }}</p>
   }
 
-  <form class="message-form" (ngSubmit)="sendMessage(messageList)">
+  <form class="message-form" (ngSubmit)="sendMessage()">
     <tui-textfield class="message-input">
       <label for="message" tuiLabel>Ваше сообщение</label>
       <input

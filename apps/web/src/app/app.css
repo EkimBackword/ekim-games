@@ -1,14 +1,14 @@
 :host {
   display: block;
   min-height: 100dvh;
-  color: #20352e;
+  color: var(--rpg-color-shell-ink);
   background:
     radial-gradient(
       ellipse at 78% 10%,
-      rgb(233 241 218 / 72%),
+      var(--rpg-color-shell-glow),
       transparent 34rem
     ),
-    #f7f6f0;
+    var(--rpg-color-shell-surface);
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
@@ -21,6 +21,35 @@
   padding: 0 5.5vw;
 }
 
+.page-shell:has(eg-home-page) {
+  box-sizing: border-box;
+  block-size: 100dvh;
+  max-width: none;
+  padding-inline: max(5.5vw, calc((100% - 1240px) / 2));
+  background: var(--rpg-wood);
+}
+
+.page-shell:has(eg-home-page) .route-content {
+  min-block-size: 0;
+}
+
+.page-shell:has(eg-home-page) > :not(.route-content) {
+  flex-shrink: 0;
+}
+
+.page-shell:has(eg-home-page)
+  :is(.brand, .account-bar, .account-bar strong, .site-footer) {
+  color: var(--rpg-color-on-wood);
+}
+
+.page-shell:has(eg-home-page) :is(.site-header, .site-footer) {
+  border-color: var(--rpg-color-gold);
+}
+
+.account-bar span {
+  overflow-wrap: anywhere;
+}
+
 .site-header,
 .account-bar,
 .site-footer {
@@ -31,29 +60,25 @@
 
 .site-header {
   min-height: 88px;
-  border-bottom: 1px solid #e9e9df;
+  border-bottom: 1px solid var(--rpg-color-shell-divider);
 }
 
 .brand {
-  color: #20352e;
+  color: var(--rpg-color-shell-ink);
   font-size: 1.28rem;
   font-weight: 800;
   letter-spacing: -0.055em;
   text-decoration: none;
 }
 
-:host-context([tuiTheme='dark']) .brand {
-  color: #f0eee6;
-}
-
 .account-bar {
   gap: 1rem;
-  color: #66736b;
+  color: var(--rpg-color-shell-ink-muted);
   font-size: 0.9rem;
 }
 
 .account-bar strong {
-  color: #20352e;
+  color: var(--rpg-color-shell-ink);
 }
 
 .global-error {
@@ -63,27 +88,21 @@
   gap: 1rem;
   margin-top: 1rem;
   padding: 0.65rem 0.9rem 0.65rem 1rem;
-  border: 1px solid #e7c5bd;
+  border: 1px solid var(--rpg-color-error-notice-border);
   border-radius: 0.75rem;
-  background: #fff4f0;
-  color: #8f3028;
+  background: var(--rpg-color-error-notice-surface);
+  color: var(--rpg-color-error-notice-text);
   font-size: 0.88rem;
 }
 
 .offline-notice {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
-  border: 1px solid #d5a66f;
+  border: 1px solid var(--rpg-color-offline-notice-border);
   border-radius: 0.75rem;
-  background: #fff7e8;
-  color: #70451f;
+  background: var(--rpg-color-offline-notice-surface);
+  color: var(--rpg-color-offline-notice-text);
   font-size: 0.88rem;
-}
-
-:host-context([tuiTheme='dark']) .offline-notice {
-  border-color: #8f653d;
-  background: #3a3024;
-  color: #f0d3ad;
 }
 
 .route-content {
@@ -92,28 +111,20 @@
   flex-direction: column;
 }
 
+.page-shell:has(eg-auth-page) {
+  max-width: none;
+  padding-inline: 0;
+}
+
+.page-shell:has(eg-auth-page) > :is(.site-header, .site-footer) {
+  display: none;
+}
+
 .site-footer {
   min-height: 58px;
-  border-top: 1px solid #e9e9df;
-  color: #969b92;
+  border-top: 1px solid var(--rpg-color-shell-divider);
+  color: var(--rpg-color-footer-text);
   font-size: 0.74rem;
-}
-
-:host-context([tuiTheme='dark']) .site-header {
-  border-color: #454545;
-}
-
-:host-context([tuiTheme='dark']) .account-bar {
-  color: #b7b7b0;
-}
-
-:host-context([tuiTheme='dark']) .account-bar strong {
-  color: #f0eee6;
-}
-
-:host-context([tuiTheme='dark']) .site-footer {
-  border-color: #454545;
-  color: #aaa9a1;
 }
 
 @media (max-width: 720px) {

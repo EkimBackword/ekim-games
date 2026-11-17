@@ -9,29 +9,12 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {
-  Router,
-  RouterLink,
-} from '@angular/router';
+import { Router } from '@angular/router';
 
-import {
-  catchError,
-  EMPTY,
-  finalize,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { catchError, EMPTY, finalize, switchMap, tap } from 'rxjs';
 
-import {
-  TuiButton,
-  TuiIcon,
-  TuiInput,
-  TuiLabel,
-} from '@taiga-ui/core';
-import {
-  TuiButtonLoading,
-  TuiPassword,
-} from '@taiga-ui/kit';
+import { TuiButton, TuiIcon, TuiInput, TuiLabel } from '@taiga-ui/core';
+import { TuiButtonLoading, TuiPassword } from '@taiga-ui/kit';
 
 import { AuthStoreService } from '../../../core/auth/auth-store.service';
 
@@ -39,7 +22,6 @@ import { AuthStoreService } from '../../../core/auth/auth-store.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
     TuiButton,
     TuiButtonLoading,
     TuiInput,
@@ -56,8 +38,18 @@ export class RegisterPage {
   protected readonly formError = signal<string | null>(null);
   private readonly formBuilder = inject(NonNullableFormBuilder);
   protected readonly form = this.formBuilder.group({
-    nickname: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(24)]],
-    password: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(128)]],
+    nickname: [
+      '',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(24)],
+    ],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(12),
+        Validators.maxLength(128),
+      ],
+    ],
     confirmPassword: ['', Validators.required],
   });
 

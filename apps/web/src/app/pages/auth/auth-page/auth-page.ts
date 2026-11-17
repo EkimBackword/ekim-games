@@ -1,14 +1,24 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+  type IsActiveMatchOptions,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
+import { TuiButton } from '@taiga-ui/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, TuiButton],
   selector: 'eg-auth-page',
   styleUrl: './auth-page.css',
   templateUrl: './auth-page.html',
 })
-export class AuthPage {}
+export class AuthPage {
+  protected readonly activeLinkOptions: IsActiveMatchOptions = {
+    paths: 'exact',
+    queryParams: 'ignored',
+    matrixParams: 'ignored',
+    fragment: 'ignored',
+  };
+}

@@ -82,6 +82,9 @@ importers:
       '@taiga-ui/icons':
         specifier: ^5.28.0
         version: 5.28.0
+      '@taiga-ui/i18n':
+        specifier: 5.28.0
+        version: 5.28.0(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2))(@ng-web-apis/common@5.4.0(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2))(@types/dom-speech-recognition@0.0.12)(rxjs@7.8.2))(rxjs@7.8.2)
       '@taiga-ui/kit':
         specifier: ^5.28.0
         version: 5.28.0(131be2032436b56a44499d6dadfdf0a7)
